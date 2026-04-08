@@ -24,7 +24,7 @@ function PhoneNumberInput({ maxLength = 10}) {
         formatted.push("(");
       }
 
-      formatted.push(numbers[idx])
+      formatted.push(numbers[idx]);
 
       if (length > 6 && idx === 5){
         formatted.push("-");
@@ -42,7 +42,7 @@ function PhoneNumberInput({ maxLength = 10}) {
     }
 
     changeInput(formatted.join(""));
-  }
+  };
 
   useEffect(
     () => {
@@ -50,7 +50,7 @@ function PhoneNumberInput({ maxLength = 10}) {
         inputRef.current.setSelectionRange(
           positionRef.current,
           positionRef.current
-        )
+        );
       }
     }, [input]);
 
