@@ -40,13 +40,13 @@
   color: #8a6f3e;
 }
 
-.feature-list {
+.page-list {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.feature-item {
+.page-item {
   width: 100%;
   padding: 0.9rem 1rem;
   border: 1px solid #d8cfbf;
@@ -69,12 +69,12 @@
   }
 }
 
-.feature-item.is-active {
+.page-item.is-active {
   background: #f3e4c8;
   border-color: #8a6f3e;
 }
 
-.feature-preview {
+.page-preview {
   flex: 1;
   display: grid;
   place-items: center;

@@ -1,17 +1,18 @@
-import { useState } from 'react';
 import type { ComponentType } from 'react';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import AppLayout, { type AppPage } from './layout/AppLayout';
 
 import './App.css';
 
-type FeatureModule = {
-  default?: ComponentType
-}
+type PageModule = {
+  default?: ComponentType;
+};
 
-const featureModules = import.meta.glob<FeatureModule>('./features/*/*.tsx', {
+const pageModules = import.meta.glob<PageModule>('./pages/*/*.tsx', {
   eager: true,
 });
 
-const features = Object.entries(featureModules)
+const pages: AppPage[] = Object.entries(pageModules)
   .map(([path, module]) => {
     const segments = path.split('/');
     const folderName = segments[2];
@@ -22,58 +23,47 @@ const features = Object.entries(featureModules)
       Component: module.default,
     };
   })
-  .filter((feature): feature is { id: string; label: string; Component: ComponentType } => Boolean(feature.Component))
+  .filter((page): page is { id: string; label: string; Component: ComponentType } => Boolean(page.Component))
   .sort((left, right) => left.label.localeCompare(right.label));
 
-const STORAGE_KEY = 'selectedFeatureId';
+const DEFAULT_PAGE_ID_KEY = "DEFAULT_PAGE_ID";
+
+const resolveDefaultPageId = (fallbackPageId: string) => {
+  const storedPageId = window.localStorage.getItem(DEFAULT_PAGE_ID_KEY);
+  const hasStoredPage = pages.some((page) => page.id === storedPageId);
+
+  if (hasStoredPage && storedPageId) {
+    return storedPageId;
+  }
+
+  return fallbackPageId;
+};
 
 function App() {
-  const [selectedFeatureId, setSelectedFeatureId] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY) ?? features[0]?.id ?? '';
-  });
+  const fallbackPageId = pages[0]?.id;
 
-  const handleSelectFeature = (id: string) => {
-    localStorage.setItem(STORAGE_KEY, id);
-    setSelectedFeatureId(id);
+  if (!fallbackPageId) {
+    return <p>No page component available.</p>;
+  }
+
+  const defaultPageId = resolveDefaultPageId(fallbackPageId);
+
+  const handleSelectedPageChange = (pageId: string) => {
+    window.localStorage.setItem(DEFAULT_PAGE_ID_KEY, pageId);
   };
 
-  const activeFeature =
-    features.find((feature) => feature.id === selectedFeatureId) ?? features[0];
-  const ActiveComponent = activeFeature?.Component;
-
   return (
-    <main className="app-shell">
-      <section className="app-panel app-panel-left">
-        <header className="panel-header">
-          <p className="panel-eyebrow">Examples</p>
-          <h1>Components</h1>
-        </header>
-
-        <div className="feature-list" role="list" aria-label="Available feature components">
-          {features.map((feature) => (
-            <button
-              key={feature.id}
-              type="button"
-              className={feature.id === activeFeature?.id ? 'feature-item is-active' : 'feature-item'}
-              onClick={() => handleSelectFeature(feature.id)}
-            >
-              {feature.label}
-            </button>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<AppLayout pages={pages} onSelectedPageChange={handleSelectedPageChange} />}>
+          <Route index element={<Navigate to={defaultPageId} replace />} />
+          {pages.map((page) => (
+            <Route key={page.id} path={page.id} element={<page.Component />} />
           ))}
-        </div>
-      </section>
-
-      <section className="app-panel app-panel-right">
-        <header className="panel-header">
-          <p className="panel-eyebrow">Preview</p>
-          <h2>{activeFeature?.label ?? 'No component selected'}</h2>
-        </header>
-
-        <div className="feature-preview">
-          {ActiveComponent ? <ActiveComponent /> : <p>No feature component available.</p>}
-        </div>
-      </section>
-    </main>
+          <Route path="*" element={<Navigate to={defaultPageId} replace />} />
+        </Route>
+      </Routes>
+    </HashRouter>
   );
 }
 
