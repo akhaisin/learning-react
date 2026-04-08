@@ -4,7 +4,7 @@ import styles from './PhoneNumberInput.module.css';
 
 function PhoneNumberInput({ maxLength = 10}) {
   const [input, changeInput] = useState("");
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const positionRef = useRef(0);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
