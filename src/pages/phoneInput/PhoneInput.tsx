@@ -1,14 +1,13 @@
-import { useEffect, useState, type ReactNode } from "react";
+import PhoneNumberInput from "../../components/PhoneNumberInput/PhoneNumberInput";
+import styles from './PhoneInput.module.css';
+
 
 function PhoneInput() {
-  const [text, setText] = useState("");
-
 
   return (
     <div>
-        <input onChange={(e) => setText(e.target.value)}>
-            
-        </input>
+      <span className={styles['phone-number-label']}>Phone:</span>
+      <PhoneNumberInput />
     </div>
   );
 }
