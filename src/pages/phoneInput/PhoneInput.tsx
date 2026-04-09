@@ -7,7 +7,7 @@ function PhoneInput() {
   return (
     <div>
       <span className={styles['phone-number-label']}>Phone:</span>
-      <PhoneNumberInput />
+      <PhoneNumberInput maxLength={10}/>
     </div>
   );
 }
