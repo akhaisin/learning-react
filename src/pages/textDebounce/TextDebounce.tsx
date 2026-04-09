@@ -1,34 +1,13 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
+import ListFilter from "../../components/listFilter/ListFilter";
+import { FRUITS } from "../../data/fruits";
 
-const FRUITS = [
-	"Apple",
-	"Banana",
-	"Cherry",
-	"Date",
-	"Elderberry",
-	"Fig",
-	"Grape",
-	"Honeydew",
-	"Indian Fig",
-	"Jackfruit",
-	"Kiwi",
-	"Lemon",
-	"Mango",
-	"Nectarine",
-	"Orange",
-	"Papaya",
-	"Quince",
-	"Raspberry",
-	"Strawberry",
-	"Tangerine",
-];
-
-const useDebaunce = (text: string, delay: number) => {
-	const [debaunced, setDebaunced] = useState(text);
+const useDebounce = (text: string, delay: number) => {
+	const [debounced, setDebounced] = useState(text);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-            setDebaunced(text);
+			setDebounced(text);
 		}, delay);
 
 		return () => {
@@ -36,47 +15,25 @@ const useDebaunce = (text: string, delay: number) => {
 		};
 	}, [text, delay]);
 
-	return debaunced;
+	return debounced;
 };
 
 function TextDebounce() {
 	const [searchTerm, setSearchTerm] = useState("");
-	const debauncedSearchTerm = useDebaunce(searchTerm, 1000);
-
-	const fruitsDataFiltered = FRUITS.filter((fruit) =>
-		fruit.toLowerCase().includes(debauncedSearchTerm.trim().toLowerCase())
-	);
-
-	const highlightMatch = (fruit: string, fragment: string): ReactNode => {
-        const normalizedFragment = fragment.trim();
-        const matchRegex = new RegExp(`(${normalizedFragment})`, "ig");
-		const fruitParts = fruit.split(matchRegex);
-		console.log("fruitParts =", fruitParts);
-
-		return fruitParts.map((part, index) =>
-			part.toLowerCase() === normalizedFragment.toLowerCase() ? (
-				<strong key={`${fruit}-${index}`}>{part}</strong>
-			) : (
-				<span key={`${fruit}-${index}`}>{part}</span>
-			)
-		);
-	};
+	const debouncedSearchTerm = useDebounce(searchTerm, 1000);
 
 	return (
 		<div>
 			<h3>Fruits filter</h3>
+			<h4>Adds debouncing on top of text filtering.</h4>
 			<input
 				type="text"
 				placeholder="Type to search"
 				value={searchTerm}
 				onChange={(e) => setSearchTerm(e.target.value)}
 			/>
-            <p>Search Term: {debauncedSearchTerm}</p>
-			<ul>
-				{fruitsDataFiltered.map((fruit) => (
-					<li key={fruit}>{highlightMatch(fruit, debauncedSearchTerm)}</li>
-				))}
-			</ul>
+			<p>Search Term: {debouncedSearchTerm}</p>
+			<ListFilter list={FRUITS} filterTerm={debouncedSearchTerm} />
 		</div>
 	);
 }

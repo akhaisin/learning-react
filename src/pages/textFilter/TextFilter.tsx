@@ -1,33 +1,21 @@
+import { useState } from "react";
 import ListFilter from "../../components/listFilter/ListFilter";
-
-const FRUITS = [
-	"Apple",
-	"Banana",
-	"Cherry",
-	"Date",
-	"Elderberry",
-	"Fig",
-	"Grape",
-	"Honeydew",
-	"Indian Fig",
-	"Jackfruit",
-	"Kiwi",
-	"Lemon",
-	"Mango",
-	"Nectarine",
-	"Orange",
-	"Papaya",
-	"Quince",
-	"Raspberry",
-	"Strawberry",
-	"Tangerine",
-];
+import { FRUITS } from "../../data/fruits";
 
 function TextFilter() {
-	
+	const [filterTerm, setFilterTerm] = useState("");
 
 	return (
-		<ListFilter list={FRUITS}/>
+		<div>
+			<h3>Fruits filter</h3>
+			<input
+				type="text"
+				placeholder="Type to search"
+				value={filterTerm}
+				onChange={(e) => setFilterTerm(e.target.value)}
+			/>
+			<ListFilter list={FRUITS} filterTerm={filterTerm} />
+		</div>
 	);
 }
 

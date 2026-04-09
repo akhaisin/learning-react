@@ -1,32 +1,29 @@
-import { useState, type ChangeEvent, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 type ListFilterProps = {
     list: string[];
+    filterTerm: string;
 };
 
-function ListFilter({ list }: ListFilterProps) {
-    const [searchTerm, setSearchTerm] = useState("");
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
-    };
+function ListFilter({ list, filterTerm }: ListFilterProps) {
+    const normalizedFilterTerm = filterTerm.trim();
 
     const listDataFiltered = list.filter((list_item) =>
-        list_item.toLowerCase().includes(searchTerm.toLowerCase())
+        list_item.toLowerCase().includes(normalizedFilterTerm.toLowerCase())
     );
 
     const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     const highlightMatch = (fruit: string): ReactNode => {
-        if (!searchTerm.trim()) {
+        if (!normalizedFilterTerm) {
             return fruit;
         }
 
-        const matchRegex = new RegExp(`(${escapeRegex(searchTerm)})`, "ig");
-        const fruitParts = fruit.split(matchRegex);
+        const matchRegex = new RegExp(`(${escapeRegex(normalizedFilterTerm)})`, "ig");
+        const filterTermParts = fruit.split(matchRegex);
 
-        return fruitParts.map((part, index) =>
-            part.toLowerCase() === searchTerm.toLowerCase() ? (
+        return filterTermParts.map((part, index) =>
+            part.toLowerCase() === normalizedFilterTerm.toLowerCase() ? (
                 <strong key={`${fruit}-${index}`}>{part}</strong>
             ) : (
                 <span key={`${fruit}-${index}`}>{part}</span>
@@ -36,13 +33,6 @@ function ListFilter({ list }: ListFilterProps) {
 
     return (
         <div>
-            <input
-                type="text"
-                placeholder="Type to search"
-                value={searchTerm}
-                onChange={handleChange}
-            />
-            
             <ul>
                 {listDataFiltered.map((list_item) => (
                     <li key={list_item}>{highlightMatch(list_item)}</li>
