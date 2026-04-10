@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status {
+  font-weight: 600;
+  color: #333;
+}
+
+.board {
+  display: grid;
+  gap: 0.35rem;
+  width: fit-content;
+}
+
+.cell {
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 0.35rem;
+  background: #fff;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #1a1a1a;
+}
+
+.cell:disabled {
+  cursor: default;
+  color: #666;
+  background: #f5f5f5;
+}
+
+.cellWinning,
+.cellWinning:disabled {
+  color: #0f5132;
+  background: #d1fae5;
+  border-color: #34d399;
+}
+
+.resetButton {
+  width: fit-content;
+}
