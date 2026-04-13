@@ -1,0 +1,11 @@
+.toggle {
+  border: 1px solid;
+}
+
+.on {
+  border-color: green;
+}
+
+.off {
+  border-color: red;
+}
