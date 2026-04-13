@@ -85,6 +85,40 @@
   box-shadow: 0 18px 40px rgba(108, 83, 35, 0.08);
 }
 
+.repo-link {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #1f2933;
+  background: rgba(255, 252, 245, 0.92);
+  border: 1px solid #d8cfbf;
+  box-shadow: 0 8px 20px rgba(31, 41, 51, 0.12);
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  z-index: 20;
+}
+
+.repo-link svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: currentColor;
+}
+
+.repo-link:hover {
+  transform: translateY(-1px);
+  border-color: #8a6f3e;
+  background: #fffdf8;
+}
+
+.repo-link:focus-visible {
+  outline: 2px solid #8a6f3e;
+  outline-offset: 2px;
+}
+
 @media (max-width: 900px) {
   .app-shell {
     flex-direction: column;
@@ -95,5 +129,10 @@
     min-width: 0;
     border-right: 0;
     border-bottom: 1px solid #d8cfbf;
+  }
+
+  .repo-link {
+    left: 0.75rem;
+    bottom: 0.75rem;
   }
 }
