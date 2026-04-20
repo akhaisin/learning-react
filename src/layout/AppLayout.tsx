@@ -4,6 +4,8 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 export type AppPage = {
 	id: string;
 	label: string;
+	done: boolean;
+	number: number;
 	Component: ComponentType;
 };
 
@@ -37,10 +39,14 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 					{pages.map((page) => (
 						<NavLink
 							key={page.id}
-							className={({ isActive }) => (isActive ? 'page-item is-active' : 'page-item')}
+							className={({ isActive }) =>
+								['page-item', isActive ? 'is-active' : '', page.done ? 'is-done' : 'is-pending'].join(' ')
+							}
 							to={`/${page.id}`}
 						>
-							{page.label}
+							<span className="page-item-number">{String(page.number).padStart(2, '0')}</span>
+							<span className="page-item-label">{page.label}</span>
+							{page.done && <span className="page-item-check" aria-hidden="true">✓</span>}
 						</NavLink>
 					))}
 				</div>

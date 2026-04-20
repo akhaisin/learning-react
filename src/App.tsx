@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout, { type AppPage } from './layout/AppLayout';
+import { exercises } from './exercises';
 
 import './App.css';
 
@@ -12,21 +13,31 @@ const pageModules = import.meta.glob<PageModule>('./pages/*/*Page.tsx', {
   eager: true,
 });
 
-const pages: AppPage[] = Object.entries(pageModules)
-  .map(([path, module]) => {
-    const segments = path.split('/');
-    const folderName = segments[2];
+const moduleByFolderId = Object.fromEntries(
+  Object.entries(pageModules).map(([path, module]) => {
+    const folderId = path.split('/')[2];
+    return [folderId, module];
+  }),
+);
 
-    return {
-      id: folderName,
-      label: folderName.replace(/([A-Z])/g, ' $1').replace(/^./, (value) => value.toUpperCase()),
-      Component: module.default,
-    };
-  })
-  .filter((page): page is { id: string; label: string; Component: ComponentType } => Boolean(page.Component))
-  .sort((left, right) => left.label.localeCompare(right.label));
+const pages: AppPage[] = exercises.flatMap((exercise, index) => {
+  const module = moduleByFolderId[exercise.id];
 
-const DEFAULT_PAGE_ID_KEY = "DEFAULT_PAGE_ID";
+  if (!module?.default) {
+    console.warn(`[exercises] No *Page.tsx found for id "${exercise.id}". Check the folder name.`);
+    return [];
+  }
+
+  return [{
+    id: exercise.id,
+    label: exercise.label,
+    done: exercise.done,
+    number: index + 1,
+    Component: module.default,
+  }];
+});
+
+const DEFAULT_PAGE_ID_KEY = 'DEFAULT_PAGE_ID';
 
 const resolveDefaultPageId = (fallbackPageId: string) => {
   const storedPageId = window.localStorage.getItem(DEFAULT_PAGE_ID_KEY);
