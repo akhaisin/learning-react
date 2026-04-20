@@ -8,7 +8,7 @@ type PageModule = {
   default?: ComponentType;
 };
 
-const pageModules = import.meta.glob<PageModule>('./pages/*/*.tsx', {
+const pageModules = import.meta.glob<PageModule>('./pages/*/*Page.tsx', {
   eager: true,
 });
 
