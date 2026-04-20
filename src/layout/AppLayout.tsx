@@ -6,6 +6,7 @@ export type AppPage = {
 	label: string;
 	done: boolean;
 	number: number;
+	tags: string[];
 	Component: ComponentType;
 };
 
@@ -45,8 +46,19 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 							to={`/${page.id}`}
 						>
 							<span className="page-item-number">{String(page.number).padStart(2, '0')}</span>
-							<span className="page-item-label">{page.label}</span>
-							{page.done && <span className="page-item-check" aria-hidden="true">✓</span>}
+							<div className="page-item-body">
+								<div className="page-item-top">
+									<span className="page-item-label">{page.label}</span>
+									{page.done && <span className="page-item-check" aria-hidden="true">✓</span>}
+								</div>
+								{page.tags.length > 0 && (
+									<div className="page-item-tags" aria-label="Topics">
+										{page.tags.map((tag) => (
+											<span key={tag} className="page-item-tag">{tag}</span>
+										))}
+									</div>
+								)}
+							</div>
 						</NavLink>
 					))}
 				</div>

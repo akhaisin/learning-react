@@ -65,7 +65,7 @@
   cursor: pointer;
   transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.6rem;
   text-decoration: none;
 
@@ -97,10 +97,24 @@
   min-width: 1.4rem;
   text-align: right;
   flex-shrink: 0;
+  padding-top: 0.1rem;
 }
 
 .page-item.is-active .page-item-number {
   color: #8a6f3e;
+}
+
+.page-item-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.page-item-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .page-item-label {
@@ -111,6 +125,28 @@
   font-size: 0.8rem;
   color: #7ab87a;
   flex-shrink: 0;
+}
+
+.page-item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.page-item-tag {
+  font-size: 0.65rem;
+  color: #b8a888;
+  letter-spacing: 0.02em;
+}
+
+.page-item-tag + .page-item-tag::before {
+  content: '·';
+  margin-right: 0.25rem;
+}
+
+.page-item.is-active .page-item-tag {
+  color: #9a7f4e;
 }
 
 .page-preview {

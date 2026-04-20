@@ -33,6 +33,7 @@ const pages: AppPage[] = exercises.flatMap((exercise, index) => {
     label: exercise.label,
     done: exercise.done,
     number: index + 1,
+    tags: exercise.tags,
     Component: module.default,
   }];
 });
