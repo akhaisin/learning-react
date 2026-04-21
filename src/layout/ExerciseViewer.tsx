@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ComponentType } from 'react';
-import { Highlight, themes } from 'prism-react-renderer';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { css } from '@codemirror/lang-css';
+import { oneDark } from '@codemirror/theme-one-dark';
 import styles from './ExerciseViewer.module.css';
 
 type Props = {
@@ -9,13 +12,12 @@ type Props = {
 	sourceFiles: Record<string, string>;
 };
 
-function getLanguage(filename: string) {
-	if (filename.endsWith('.tsx')) return 'tsx';
-	if (filename.endsWith('.ts')) return 'typescript';
-	if (filename.endsWith('.css')) return 'css';
-	if (filename.endsWith('.jsx')) return 'jsx';
-	if (filename.endsWith('.js')) return 'javascript';
-	return 'text';
+const JS_EXT = javascript({ jsx: true, typescript: true });
+const CSS_EXT = css();
+
+function getExtensions(filename: string) {
+	if (filename.endsWith('.css')) return [CSS_EXT];
+	return [JS_EXT];
 }
 
 function sortFiles(files: [string, string][]): [string, string][] {
@@ -71,24 +73,14 @@ function ExerciseViewer({ exerciseId, component: Component, sourceFiles }: Props
 						<Component />
 					</div>
 				) : (
-					<Highlight
-						theme={themes.nightOwl}
-						code={sourceFiles[activeTab] ?? ''}
-						language={getLanguage(activeTab)}
-					>
-						{({ className, style, tokens, getLineProps, getTokenProps }) => (
-							<pre className={`${className} ${styles.codeBlock}`} style={style}>
-								{tokens.map((line, i) => (
-									<div key={i} {...getLineProps({ line })}>
-										<span className={styles.lineNumber}>{i + 1}</span>
-										{line.map((token, key) => (
-											<span key={key} {...getTokenProps({ token })} />
-										))}
-									</div>
-								))}
-							</pre>
-						)}
-					</Highlight>
+					<CodeMirror
+						value={sourceFiles[activeTab] ?? ''}
+						extensions={getExtensions(activeTab)}
+						theme={oneDark}
+						readOnly
+						height="100%"
+						style={{ height: '100%' }}
+					/>
 				)}
 			</div>
 		</div>
