@@ -78,17 +78,20 @@ function SandboxEditor() {
   const [renderKey, setRenderKey] = useState(0);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_TSX, tsxCode);
     const timer = setTimeout(() => {
+      localStorage.setItem(STORAGE_TSX, tsxCode);
       const next = compile(tsxCode);
       setResult(next);
       if (next.ok) setRenderKey(k => k + 1);
-    }, 400);
+    }, 300);
     return () => clearTimeout(timer);
   }, [tsxCode]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_CSS, cssCode);
+    const timer = setTimeout(() => {
+      localStorage.setItem(STORAGE_CSS, cssCode);
+    }, 300);
+    return () => clearTimeout(timer);
   }, [cssCode]);
 
   useEffect(() => {
