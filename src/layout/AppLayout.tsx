@@ -1,6 +1,7 @@
 import { useEffect, type ComponentType } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
+import styles from './AppLayout.module.css';
 
 export type AppPage = {
 	id: string;
@@ -31,32 +32,36 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 	}, [activePage?.id, onSelectedPageChange]);
 
 	return (
-		<main className="app-shell">
-			<PanelGroup orientation="horizontal" className="app-panels">
-				<Panel defaultSize={28} minSize={15} className="app-panel app-panel-left">
-					<header className="panel-header">
+		<main className={styles['app-shell']}>
+			<PanelGroup orientation="horizontal" className={styles['app-panels']}>
+				<Panel defaultSize={28} minSize={15} className={`${styles['app-panel']} ${styles['app-panel-left']}`}>
+					<header className={styles['panel-header']}>
 						<h1>Exercises</h1>
 					</header>
 
-					<div className="page-list" role="list" aria-label="Available page components">
+					<div className={styles['page-list']} role="list" aria-label="Available page components">
 						{pages.map((page) => (
 							<NavLink
 								key={page.id}
 								className={({ isActive }) =>
-									['page-item', isActive ? 'is-active' : '', page.done ? 'is-done' : 'is-pending'].join(' ')
+									[
+										styles['page-item'],
+										isActive ? styles['is-active'] : '',
+										page.done ? styles['is-done'] : styles['is-pending'],
+									].join(' ')
 								}
 								to={`/${page.id}`}
 							>
-								<span className="page-item-number">{String(page.number).padStart(2, '0')}</span>
-								<div className="page-item-body">
-									<div className="page-item-top">
-										<span className="page-item-label">{page.label}</span>
-										{page.done && <span className="page-item-check" aria-hidden="true">✓</span>}
+								<span className={styles['page-item-number']}>{String(page.number).padStart(2, '0')}</span>
+								<div className={styles['page-item-body']}>
+									<div className={styles['page-item-top']}>
+										<span className={styles['page-item-label']}>{page.label}</span>
+										{page.done && <span className={styles['page-item-check']} aria-hidden="true">✓</span>}
 									</div>
 									{page.tags.length > 0 && (
-										<div className="page-item-tags" aria-label="Topics">
+										<div className={styles['page-item-tags']} aria-label="Topics">
 											{page.tags.map((tag) => (
-												<span key={tag} className="page-item-tag">{tag}</span>
+												<span key={tag} className={styles['page-item-tag']}>{tag}</span>
 											))}
 										</div>
 									)}
@@ -66,21 +71,21 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 					</div>
 				</Panel>
 
-				<PanelResizeHandle className="resize-handle" />
+				<PanelResizeHandle className={styles['resize-handle']} />
 
-				<Panel defaultSize={72} minSize={30} className="app-panel app-panel-right">
-					<header className="panel-header">
+				<Panel defaultSize={72} minSize={30} className={`${styles['app-panel']} ${styles['app-panel-right']}`}>
+					<header className={styles['panel-header']}>
 						<h2>{activePage?.label ?? 'No component selected'}</h2>
 					</header>
 
-					<div className="page-preview">
+					<div className={styles['page-preview']}>
 						<Outlet />
 					</div>
 				</Panel>
 			</PanelGroup>
 
 			<a
-				className="repo-link"
+				className={styles['repo-link']}
 				href="https://github.com/akhaisin/learning-react"
 				target="_blank"
 				rel="noreferrer"

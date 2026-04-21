@@ -4,8 +4,6 @@ import AppLayout, { type AppPage } from './layout/AppLayout';
 import ExerciseViewer from './layout/ExerciseViewer';
 import { exercises } from './exercises';
 
-import './App.css';
-
 type PageModule = {
   default?: ComponentType;
 };
