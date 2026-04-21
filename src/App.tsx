@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout, { type AppPage } from './layout/AppLayout';
+import ExerciseViewer from './layout/ExerciseViewer';
 import { exercises } from './exercises';
 
 import './App.css';
@@ -13,12 +14,29 @@ const pageModules = import.meta.glob<PageModule>('./pages/*/*Page.tsx', {
   eager: true,
 });
 
+const rawSources = import.meta.glob('./pages/*/*', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
 const moduleByFolderId = Object.fromEntries(
   Object.entries(pageModules).map(([path, module]) => {
     const folderId = path.split('/')[2];
     return [folderId, module];
   }),
 );
+
+const sourcesByFolderId: Record<string, Record<string, string>> = {};
+for (const [path, content] of Object.entries(rawSources)) {
+  const parts = path.split('/');
+  const folderId = parts[2];
+  const filename = parts[3];
+  if (!sourcesByFolderId[folderId]) {
+    sourcesByFolderId[folderId] = {};
+  }
+  sourcesByFolderId[folderId][filename] = content;
+}
 
 const pages: AppPage[] = exercises.flatMap((exercise, index) => {
   const module = moduleByFolderId[exercise.id];
@@ -35,6 +53,7 @@ const pages: AppPage[] = exercises.flatMap((exercise, index) => {
     number: index + 1,
     tags: exercise.tags,
     Component: module.default,
+    sourceFiles: sourcesByFolderId[exercise.id] ?? {},
   }];
 });
 
@@ -70,7 +89,11 @@ function App() {
         <Route path="/" element={<AppLayout pages={pages} onSelectedPageChange={handleSelectedPageChange} />}>
           <Route index element={<Navigate to={defaultPageId} replace />} />
           {pages.map((page) => (
-            <Route key={page.id} path={page.id} element={<page.Component />} />
+            <Route
+              key={page.id}
+              path={page.id}
+              element={<ExerciseViewer exerciseId={page.id} component={page.Component} sourceFiles={page.sourceFiles} />}
+            />
           ))}
           <Route path="*" element={<Navigate to={defaultPageId} replace />} />
         </Route>

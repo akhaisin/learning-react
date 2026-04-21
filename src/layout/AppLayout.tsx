@@ -8,6 +8,7 @@ export type AppPage = {
 	number: number;
 	tags: string[];
 	Component: ComponentType;
+	sourceFiles: Record<string, string>;
 };
 
 type AppLayoutProps = {
