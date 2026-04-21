@@ -35,8 +35,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 			<PanelGroup orientation="horizontal" className="app-panels">
 				<Panel defaultSize={28} minSize={15} className="app-panel app-panel-left">
 					<header className="panel-header">
-						<p className="panel-eyebrow">Examples</p>
-						<h1>Components</h1>
+						<h1>Exercises</h1>
 					</header>
 
 					<div className="page-list" role="list" aria-label="Available page components">
@@ -71,7 +70,6 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 
 				<Panel defaultSize={72} minSize={30} className="app-panel app-panel-right">
 					<header className="panel-header">
-						<p className="panel-eyebrow">Preview</p>
 						<h2>{activePage?.label ?? 'No component selected'}</h2>
 					</header>
 

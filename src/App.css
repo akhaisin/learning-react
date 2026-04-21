@@ -68,14 +68,6 @@
   font-size: clamp(1.5rem, 3vw, 2.2rem);
 }
 
-.panel-eyebrow {
-  margin: 0 0 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.75rem;
-  color: #8a6f3e;
-}
-
 .page-list {
   display: flex;
   flex-direction: column;
