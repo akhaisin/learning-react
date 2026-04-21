@@ -10,20 +10,52 @@
   padding: 2rem;
 }
 
+.app-panels {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .app-panel-left {
-  width: 30%;
-  min-width: 260px;
   border-right: 1px solid #d8cfbf;
   background: rgba(255, 252, 245, 0.92);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
+}
+
+.resize-handle {
+  width: 5px;
+  flex-shrink: 0;
+  background: transparent;
+  cursor: col-resize;
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 2px;
+  width: 1px;
+  background: #d8cfbf;
+  transition: background-color 0.15s ease, left 0.15s ease, width 0.15s ease;
+}
+
+.resize-handle:hover::after,
+.resize-handle[data-separator-state="drag"]::after {
+  left: 1px;
+  width: 3px;
+  background: #8a6f3e;
 }
 
 .app-panel-right {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  height: 100%;
 }
 
 .panel-header {
@@ -204,11 +236,33 @@
     flex-direction: column;
   }
 
+  .app-panels {
+    flex-direction: column;
+  }
+
+  .resize-handle {
+    width: auto;
+    height: 5px;
+    cursor: row-resize;
+  }
+
+  .resize-handle::after {
+    inset: 0;
+    top: 2px;
+    left: 0;
+    width: auto;
+    height: 1px;
+  }
+
+  .resize-handle:hover::after,
+  .resize-handle[data-separator-state="drag"]::after {
+    top: 1px;
+    left: 0;
+    width: auto;
+    height: 3px;
+  }
+
   .app-panel-left {
-    width: 100%;
-    min-width: 0;
-    max-height: 40vh;
-    overflow: hidden;
     border-right: 0;
     border-bottom: 1px solid #d8cfbf;
   }

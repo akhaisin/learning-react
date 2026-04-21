@@ -1,5 +1,6 @@
 import { useEffect, type ComponentType } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 
 export type AppPage = {
 	id: string;
@@ -31,50 +32,54 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 
 	return (
 		<main className="app-shell">
-			<section className="app-panel app-panel-left">
-				<header className="panel-header">
-					<p className="panel-eyebrow">Examples</p>
-					<h1>Components</h1>
-				</header>
+			<PanelGroup orientation="horizontal" className="app-panels">
+				<Panel defaultSize={28} minSize={15} className="app-panel app-panel-left">
+					<header className="panel-header">
+						<p className="panel-eyebrow">Examples</p>
+						<h1>Components</h1>
+					</header>
 
-				<div className="page-list" role="list" aria-label="Available page components">
-					{pages.map((page) => (
-						<NavLink
-							key={page.id}
-							className={({ isActive }) =>
-								['page-item', isActive ? 'is-active' : '', page.done ? 'is-done' : 'is-pending'].join(' ')
-							}
-							to={`/${page.id}`}
-						>
-							<span className="page-item-number">{String(page.number).padStart(2, '0')}</span>
-							<div className="page-item-body">
-								<div className="page-item-top">
-									<span className="page-item-label">{page.label}</span>
-									{page.done && <span className="page-item-check" aria-hidden="true">✓</span>}
-								</div>
-								{page.tags.length > 0 && (
-									<div className="page-item-tags" aria-label="Topics">
-										{page.tags.map((tag) => (
-											<span key={tag} className="page-item-tag">{tag}</span>
-										))}
+					<div className="page-list" role="list" aria-label="Available page components">
+						{pages.map((page) => (
+							<NavLink
+								key={page.id}
+								className={({ isActive }) =>
+									['page-item', isActive ? 'is-active' : '', page.done ? 'is-done' : 'is-pending'].join(' ')
+								}
+								to={`/${page.id}`}
+							>
+								<span className="page-item-number">{String(page.number).padStart(2, '0')}</span>
+								<div className="page-item-body">
+									<div className="page-item-top">
+										<span className="page-item-label">{page.label}</span>
+										{page.done && <span className="page-item-check" aria-hidden="true">✓</span>}
 									</div>
-								)}
-							</div>
-						</NavLink>
-					))}
-				</div>
-			</section>
+									{page.tags.length > 0 && (
+										<div className="page-item-tags" aria-label="Topics">
+											{page.tags.map((tag) => (
+												<span key={tag} className="page-item-tag">{tag}</span>
+											))}
+										</div>
+									)}
+								</div>
+							</NavLink>
+						))}
+					</div>
+				</Panel>
 
-			<section className="app-panel app-panel-right">
-				<header className="panel-header">
-					<p className="panel-eyebrow">Preview</p>
-					<h2>{activePage?.label ?? 'No component selected'}</h2>
-				</header>
+				<PanelResizeHandle className="resize-handle" />
 
-				<div className="page-preview">
-					<Outlet />
-				</div>
-			</section>
+				<Panel defaultSize={72} minSize={30} className="app-panel app-panel-right">
+					<header className="panel-header">
+						<p className="panel-eyebrow">Preview</p>
+						<h2>{activePage?.label ?? 'No component selected'}</h2>
+					</header>
+
+					<div className="page-preview">
+						<Outlet />
+					</div>
+				</Panel>
+			</PanelGroup>
 
 			<a
 				className="repo-link"
