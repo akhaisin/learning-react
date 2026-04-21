@@ -62,10 +62,48 @@
   margin-bottom: 1.5rem;
 }
 
-.panel-header h1,
 .panel-header h2 {
   margin: 0;
   font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.mode-toggle {
+  display: flex;
+  border: 1px solid #d8cfbf;
+  border-radius: 12px;
+  overflow: hidden;
+  width: fit-content;
+  background: #fffdf8;
+}
+
+.mode-btn {
+  padding: 0.45rem 1.1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  color: #b8a888;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.mode-btn + .mode-btn {
+  border-left: 1px solid #d8cfbf;
+}
+
+.mode-btn:hover {
+  color: #5c4a28;
+  background: #f8f0e0;
+}
+
+.mode-btn-active {
+  background: #f3e4c8;
+  color: #5c4a28;
+  font-weight: 500;
+}
+
+.mode-btn-active:hover {
+  background: #f3e4c8;
 }
 
 .page-list {

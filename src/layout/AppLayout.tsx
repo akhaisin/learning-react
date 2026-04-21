@@ -1,5 +1,5 @@
-import { useEffect, type ComponentType } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { useEffect, useRef, type ComponentType } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import styles from './AppLayout.module.css';
 
@@ -20,23 +20,40 @@ type AppLayoutProps = {
 
 function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 	const location = useLocation();
+	const navigate = useNavigate();
 	const selectedPageId = location.pathname.replace(/^\//, '');
-	const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[0];
+	const isSandbox = selectedPageId === 'sandbox';
+	const activePage = pages.find((page) => page.id === selectedPageId);
+	const lastExerciseId = useRef(pages[0]?.id ?? '');
 
 	useEffect(() => {
-		if (!activePage?.id) {
-			return;
+		if (!isSandbox && activePage) {
+			lastExerciseId.current = activePage.id;
+			onSelectedPageChange(activePage.id);
 		}
+	}, [isSandbox, activePage, onSelectedPageChange]);
 
-		onSelectedPageChange(activePage.id);
-	}, [activePage?.id, onSelectedPageChange]);
+	const panelTitle = isSandbox ? 'Sandbox' : (activePage?.label ?? '');
 
 	return (
 		<main className={styles['app-shell']}>
 			<PanelGroup orientation="horizontal" className={styles['app-panels']}>
 				<Panel defaultSize={28} minSize={15} className={`${styles['app-panel']} ${styles['app-panel-left']}`}>
 					<header className={styles['panel-header']}>
-						<h1>Exercises</h1>
+						<div className={styles['mode-toggle']}>
+							<button
+								className={[styles['mode-btn'], !isSandbox ? styles['mode-btn-active'] : ''].join(' ')}
+								onClick={() => navigate(lastExerciseId.current)}
+							>
+								Exercises
+							</button>
+							<button
+								className={[styles['mode-btn'], isSandbox ? styles['mode-btn-active'] : ''].join(' ')}
+								onClick={() => navigate('/sandbox')}
+							>
+								Sandbox
+							</button>
+						</div>
 					</header>
 
 					<div className={styles['page-list']} role="list" aria-label="Available page components">
@@ -46,7 +63,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 								className={({ isActive }) =>
 									[
 										styles['page-item'],
-										isActive ? styles['is-active'] : '',
+										isActive && !isSandbox ? styles['is-active'] : '',
 										page.done ? styles['is-done'] : styles['is-pending'],
 									].join(' ')
 								}
@@ -75,7 +92,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 
 				<Panel defaultSize={72} minSize={30} className={`${styles['app-panel']} ${styles['app-panel-right']}`}>
 					<header className={styles['panel-header']}>
-						<h2>{activePage?.label ?? 'No component selected'}</h2>
+						<h2>{panelTitle}</h2>
 					</header>
 
 					<div className={styles['page-preview']}>

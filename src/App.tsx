@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout, { type AppPage } from './layout/AppLayout';
 import ExerciseViewer from './layout/ExerciseViewer';
+import SandboxEditor from './layout/SandboxEditor';
 import { exercises } from './exercises';
 
 type PageModule = {
@@ -93,6 +94,7 @@ function App() {
               element={<ExerciseViewer exerciseId={page.id} component={page.Component} sourceFiles={page.sourceFiles} />}
             />
           ))}
+          <Route path="sandbox" element={<SandboxEditor />} />
           <Route path="*" element={<Navigate to={defaultPageId} replace />} />
         </Route>
       </Routes>

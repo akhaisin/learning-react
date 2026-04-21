@@ -1,0 +1,91 @@
+.editor {
+  height: 100%;
+  width: 100%;
+}
+
+.editorPanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tabBar {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #d8cfbf;
+  margin-bottom: 0.75rem;
+}
+
+.tab {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid #d8cfbf;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #8a6f3e;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.tab:hover {
+  border-color: #b89355;
+  background: #f8f0e0;
+}
+
+.tabActive {
+  background: #f3e4c8;
+  border-color: #8a6f3e;
+  color: #5c4a28;
+  font-weight: 500;
+}
+
+.editorContent {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.previewPanel {
+  padding: 1.5rem;
+  overflow: auto;
+}
+
+.resizeHandle {
+  width: 5px;
+  flex-shrink: 0;
+  background: transparent;
+  cursor: col-resize;
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+.resizeHandle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 2px;
+  width: 1px;
+  background: #d8cfbf;
+  transition: background-color 0.15s ease, left 0.15s ease, width 0.15s ease;
+}
+
+.resizeHandle:hover::after,
+.resizeHandle[data-separator-state="drag"]::after {
+  left: 1px;
+  width: 3px;
+  background: #8a6f3e;
+}
+
+.error {
+  color: #c0392b;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}

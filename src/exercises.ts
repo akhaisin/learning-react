@@ -24,8 +24,7 @@ export type Exercise = {
 
 export const exercises: Exercise[] = [
   // Foundations
-  { id: 'aSandbox',             label: 'Sandbox',             done: true,  tags: [Tag.State] },
-  { id: 'toggleButton',         label: 'Toggle Button',       done: true,  tags: [Tag.State, Tag.Hooks] },
+{ id: 'toggleButton',         label: 'Toggle Button',       done: true,  tags: [Tag.State, Tag.Hooks] },
   { id: 'starRating',           label: 'Star Rating',         done: true,  tags: [Tag.State] },
   { id: 'progressBar',          label: 'Progress Bar',        done: true,  tags: [Tag.State, Tag.Effects] },
   { id: 'stopWatch',            label: 'Stop Watch',          done: false, tags: [Tag.State, Tag.Effects, Tag.Refs, Tag.Hooks] },
