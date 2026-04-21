@@ -28,7 +28,7 @@ export const exercises: Exercise[] = [
   { id: 'toggleButton',         label: 'Toggle Button',       done: true,  tags: [Tag.State, Tag.Hooks] },
   { id: 'starRating',           label: 'Star Rating',         done: true,  tags: [Tag.State] },
   { id: 'progressBar',          label: 'Progress Bar',        done: true,  tags: [Tag.State, Tag.Effects] },
-  { id: 'stopWatch',            label: 'Stop Watch',          done: true,  tags: [Tag.State, Tag.Effects, Tag.Refs] },
+  { id: 'stopWatch',            label: 'Stop Watch',          done: false, tags: [Tag.State, Tag.Effects, Tag.Refs, Tag.Hooks] },
   { id: 'phoneInput',           label: 'Phone Input',         done: true,  tags: [Tag.State, Tag.Refs, Tag.Forms] },
 
   // State patterns
@@ -43,6 +43,7 @@ export const exercises: Exercise[] = [
   // Composition
   { id: 'modalDialogDemo',      label: 'Modal Dialog',        done: true,  tags: [Tag.State, Tag.Forms] },
   { id: 'tikTakToe',            label: 'Tic-Tac-Toe',         done: true,  tags: [Tag.State, Tag.TypeScript] },
+  { id: 'accordion',            label: 'Accordion',           done: false, tags: [Tag.State, Tag.TypeScript] },
 
   // Intermediate hooks
   { id: 'formWithValidation',   label: 'Form With Validation', done: false, tags: [Tag.State, Tag.Forms, Tag.TypeScript] },
@@ -51,6 +52,7 @@ export const exercises: Exercise[] = [
 
   // Context & state machines
   { id: 'themeContext',         label: 'Theme Context',       done: false, tags: [Tag.Context, Tag.Hooks] },
+  { id: 'toastNotifications',  label: 'Toast Notifications', done: false, tags: [Tag.Context, Tag.Reducer, Tag.Hooks] },
 
   // DOM & interaction
   { id: 'dragAndDrop',          label: 'Drag And Drop',       done: false, tags: [Tag.State, Tag.DOM, Tag.DragDrop] },
