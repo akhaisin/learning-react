@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ComponentType } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useHostSync } from '../hooks/useHostSync';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import styles from './AppLayout.module.css';
 
@@ -19,6 +20,7 @@ type AppLayoutProps = {
 };
 
 function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
+	useHostSync();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const selectedPageId = location.pathname.replace(/^\//, '');
