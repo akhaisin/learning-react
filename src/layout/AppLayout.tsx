@@ -108,6 +108,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 
 			<MeflyNavReceiver
 				trustedOrigins={['https://mefly.dev', 'https://www.mefly.dev']}
+				activationMode="hover"
 				style={{
 					left: '1rem',
 					bottom: '1rem',
