@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react';
+import React, { useEffect, useRef, useState, type ComponentType } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useHostSync } from '../hooks/useHostSync';
+import { useHostSync, MeflyNavReceiver } from 'mefly-nav';
+import 'mefly-nav/style.css';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import styles from './AppLayout.module.css';
 
@@ -20,7 +21,8 @@ type AppLayoutProps = {
 };
 
 function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
-	useHostSync();
+	useHostSync(['https://mefly.dev', 'https://www.mefly.dev']);
+	const [isEmbedded] = useState(() => window.parent !== window);
 	const location = useLocation();
 	const navigate = useNavigate();
 	const selectedPageId = location.pathname.replace(/^\//, '');
@@ -39,7 +41,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 	const panelTitle = isSandbox ? 'Sandbox' : (activePage?.label ?? '');
 
 	return (
-		<main className={styles['app-shell']}>
+		<main className={`${styles['app-shell']}${isEmbedded ? ` ${styles['is-embedded']}` : ''}`}>
 			<PanelGroup orientation="horizontal" className={styles['app-panels']}>
 				<Panel defaultSize={28} minSize={15} className={`${styles['app-panel']} ${styles['app-panel-left']}`}>
 					<header className={styles['panel-header']}>
@@ -103,6 +105,21 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 					</div>
 				</Panel>
 			</PanelGroup>
+
+			<MeflyNavReceiver
+				trustedOrigins={['https://mefly.dev', 'https://www.mefly.dev']}
+				style={{
+					left: '1rem',
+					bottom: '1rem',
+					'--mefly-nav-trigger-size': '2.15rem',
+					'--mefly-nav-trigger-bg': 'rgba(255, 252, 245, 0.92)',
+					'--mefly-nav-trigger-bg-hover': 'rgba(240, 236, 226, 0.97)',
+					'--mefly-nav-trigger-color': '#403929',
+					'--mefly-nav-trigger-border': '1px solid #d8cfbf',
+					'--mefly-nav-trigger-shadow': '0 8px 20px rgba(31, 41, 51, 0.12)',
+					'--mefly-nav-trigger-hover-transform': 'translateY(-1px)',
+				} as React.CSSProperties}
+			/>
 
 			<a
 				className={styles['repo-link']}

@@ -294,6 +294,9 @@
   outline-offset: 2px;
 }
 
+.is-embedded .repo-link { left: 3.75rem; }
+.is-embedded .help-btn  { left: 6.5rem; }
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -433,4 +436,7 @@
     left: 3.5rem;
     bottom: 0.75rem;
   }
+
+  .is-embedded .repo-link { left: 3.5rem; }
+  .is-embedded .help-btn  { left: 6.25rem; }
 }
