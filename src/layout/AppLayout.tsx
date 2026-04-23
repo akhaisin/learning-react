@@ -5,14 +5,25 @@ import 'mefly-nav/style.css';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import styles from './AppLayout.module.css';
 
+export type AppVariation = {
+	id: string;
+	label: string;
+	done: boolean;
+	Component: ComponentType;
+	sourceFiles: Record<string, string>;
+};
+
 export type AppPage = {
 	id: string;
 	label: string;
 	done: boolean;
 	number: number;
 	tags: string[];
-	Component: ComponentType;
-	sourceFiles: Record<string, string>;
+	// Single implementation
+	Component?: ComponentType;
+	sourceFiles?: Record<string, string>;
+	// Or variations
+	variations?: AppVariation[];
 };
 
 type AppLayoutProps = {
@@ -25,20 +36,31 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 	const [isEmbedded] = useState(() => window.parent !== window);
 	const location = useLocation();
 	const navigate = useNavigate();
-	const selectedPageId = location.pathname.replace(/^\//, '');
-	const isSandbox = selectedPageId === 'sandbox';
-	const activePage = pages.find((page) => page.id === selectedPageId);
-	const lastExerciseId = useRef(pages[0]?.id ?? '');
+	const selectedPath = location.pathname.replace(/^\//, '');
+	const isSandbox = selectedPath === 'sandbox';
+
+	const [activePageId, activeVariationId] = selectedPath.split('/');
+	const activePage = pages.find((page) => page.id === activePageId);
+
+	const lastExerciseId = useRef(
+		pages[0]?.variations ? `${pages[0].id}/${pages[0].variations[0].id}` : (pages[0]?.id ?? ''),
+	);
 	const [helpOpen, setHelpOpen] = useState(false);
 
 	useEffect(() => {
 		if (!isSandbox && activePage) {
-			lastExerciseId.current = activePage.id;
-			onSelectedPageChange(activePage.id);
+			const fullPath = activeVariationId ? `${activePageId}/${activeVariationId}` : activePageId;
+			lastExerciseId.current = fullPath;
+			onSelectedPageChange(fullPath);
 		}
-	}, [isSandbox, activePage, onSelectedPageChange]);
+	}, [isSandbox, activePage, activePageId, activeVariationId, onSelectedPageChange]);
 
-	const panelTitle = isSandbox ? 'Sandbox' : (activePage?.label ?? '');
+	const activeVariation = activePage?.variations?.find((v) => v.id === activeVariationId);
+	const panelTitle = isSandbox
+		? 'Sandbox'
+		: activeVariation
+			? `${activePage?.label} · ${activeVariation.label}`
+			: (activePage?.label ?? '');
 
 	return (
 		<main className={`${styles['app-shell']}${isEmbedded ? ` ${styles['is-embedded']}` : ''}`}>
@@ -62,34 +84,89 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 					</header>
 
 					<div className={styles['page-list']} role="list" aria-label="Available page components">
-						{pages.map((page) => (
-							<NavLink
-								key={page.id}
-								className={({ isActive }) =>
-									[
-										styles['page-item'],
-										isActive && !isSandbox ? styles['is-active'] : '',
-										page.done ? styles['is-done'] : styles['is-pending'],
-									].join(' ')
-								}
-								to={`/${page.id}`}
-							>
-								<span className={styles['page-item-number']}>{String(page.number).padStart(2, '0')}</span>
-								<div className={styles['page-item-body']}>
-									<div className={styles['page-item-top']}>
-										<span className={styles['page-item-label']}>{page.label}</span>
-										{page.done && <span className={styles['page-item-check']} aria-hidden="true">✓</span>}
-									</div>
-									{page.tags.length > 0 && (
-										<div className={styles['page-item-tags']} aria-label="Topics">
-											{page.tags.map((tag) => (
-												<span key={tag} className={styles['page-item-tag']}>{tag}</span>
-											))}
+						{pages.map((page) => {
+							if (page.variations) {
+								const isGroupActive = page.id === activePageId && !isSandbox;
+								return (
+									<div
+										key={page.id}
+										role="listitem"
+										className={[
+											styles['page-item'],
+											isGroupActive ? styles['is-active'] : '',
+											page.done ? styles['is-done'] : styles['is-pending'],
+										].join(' ')}
+										onClick={() => navigate(`/${page.id}/${page.variations![0].id}`)}
+									>
+										<span className={styles['page-item-number']}>{String(page.number).padStart(2, '0')}</span>
+										<div className={styles['page-item-cols']}>
+											<div className={styles['page-item-col-main']}>
+												<div className={styles['page-item-top']}>
+													<span className={styles['page-item-label']}>{page.label}</span>
+													{page.done && <span className={styles['page-item-check']} aria-hidden="true">✓</span>}
+												</div>
+												<div className={styles['page-item-variations']}>
+													{page.variations.map((variation) => (
+														<NavLink
+															key={variation.id}
+															to={`/${page.id}/${variation.id}`}
+															onClick={(e) => e.stopPropagation()}
+															className={({ isActive }) =>
+																[
+																	styles['variation-link'],
+																	isActive && !isSandbox ? styles['variation-link-active'] : '',
+																	variation.done ? '' : styles['variation-pending'],
+																].join(' ')
+															}
+														>
+															<span className={styles['variation-dot']} aria-hidden="true" />
+															<span>{variation.label}</span>
+															{variation.done && <span className={styles['page-item-check']} aria-hidden="true">✓</span>}
+														</NavLink>
+													))}
+												</div>
+											</div>
+											{page.tags.length > 0 && (
+												<div className={styles['page-item-col-tags']} aria-label="Topics">
+													{page.tags.map((tag) => (
+														<span key={tag} className={styles['page-item-tag']}>{tag}</span>
+													))}
+												</div>
+											)}
 										</div>
-									)}
-								</div>
-							</NavLink>
-						))}
+									</div>
+								);
+							}
+
+							return (
+								<NavLink
+									key={page.id}
+									className={({ isActive }) =>
+										[
+											styles['page-item'],
+											isActive && !isSandbox ? styles['is-active'] : '',
+											page.done ? styles['is-done'] : styles['is-pending'],
+										].join(' ')
+									}
+									to={`/${page.id}`}
+								>
+									<span className={styles['page-item-number']}>{String(page.number).padStart(2, '0')}</span>
+									<div className={styles['page-item-body']}>
+										<div className={styles['page-item-top']}>
+											<span className={styles['page-item-label']}>{page.label}</span>
+											{page.done && <span className={styles['page-item-check']} aria-hidden="true">✓</span>}
+										</div>
+										{page.tags.length > 0 && (
+											<div className={styles['page-item-tags']} aria-label="Topics">
+												{page.tags.map((tag) => (
+													<span key={tag} className={styles['page-item-tag']}>{tag}</span>
+												))}
+											</div>
+										)}
+									</div>
+								</NavLink>
+							);
+						})}
 					</div>
 				</Panel>
 
@@ -166,6 +243,9 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 						<h3>The kata mindset</h3>
 						<p>
 							Each exercise is intentionally small. The goal is not to build features but to deeply understand one idea at a time. Return to the same kata on different days — clarity comes from repetition, not just completion.
+						</p>
+						<p>
+							Some exercises offer multiple <strong>variations</strong> — the same problem solved differently. Each variation isolates a distinct approach so you can compare them side by side and understand the trade-offs.
 						</p>
 						<p>
 							Exercises marked with <span style={{ color: '#7ab87a', fontWeight: 600 }}>✓</span> are ones you have worked through. To mark an exercise as done, set its <code>done</code> flag to <code>true</code> in <code>src/exercises.ts</code> — that is the single registry where all exercises are defined and tracked. There is no wrong order — follow your curiosity.

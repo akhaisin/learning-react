@@ -211,6 +211,76 @@
   color: #9a7f4e;
 }
 
+/* Two-column layout for variation exercises */
+.page-item-cols {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.page-item-col-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.page-item-col-tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Variation links — inside the box, compact */
+.page-item-variations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.variation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #8a7a60;
+  font-size: 0.82rem;
+  margin-left: -0.4rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.variation-link:hover {
+  background: rgba(139, 111, 62, 0.1);
+  color: #5c4a28;
+}
+
+.variation-link-active {
+  background: rgba(139, 111, 62, 0.12);
+  color: #5c4a28;
+  font-weight: 500;
+}
+
+.variation-pending {
+  color: #b8a888;
+}
+
+.variation-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
 .page-preview {
   flex: 1;
   min-height: 0;

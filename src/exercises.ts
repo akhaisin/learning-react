@@ -15,11 +15,18 @@ export const Tag = {
 
 export type Tag = typeof Tag[keyof typeof Tag];
 
+export type Variation = {
+  id: string;
+  label: string;
+  done: boolean;
+};
+
 export type Exercise = {
   id: string;
   label: string;
   done: boolean;
   tags: Tag[];
+  variations?: Variation[];
 };
 
 export const exercises: Exercise[] = [
@@ -31,13 +38,23 @@ export const exercises: Exercise[] = [
   { id: 'phoneInput',           label: 'Phone Input',         done: true,  tags: [Tag.State, Tag.Refs, Tag.Forms] },
 
   // State patterns
-  { id: 'todoList',             label: 'Todo List',           done: true,  tags: [Tag.State, Tag.Forms] },
+  { id: 'todoList',             label: 'Todo List',           done: true,  tags: [Tag.State, Tag.Forms],
+    variations: [
+      { id: 'useState',   label: 'useState',   done: true  },
+      { id: 'useReducer', label: 'useReducer', done: false },
+    ],
+  },
   { id: 'nestedCheckboxesDemo', label: 'Nested Checkboxes',  done: true,  tags: [Tag.State, Tag.Refs, Tag.Forms] },
   { id: 'transferList',         label: 'Transfer List',       done: true,  tags: [Tag.State, Tag.Forms] },
 
   // Filtering & data
   { id: 'textFilter',           label: 'Text Filter',         done: true,  tags: [Tag.State, Tag.Forms] },
-  { id: 'textDebounce',         label: 'Text Debounce',       done: true,  tags: [Tag.State, Tag.Hooks, Tag.Performance] },
+  { id: 'textDebounce',         label: 'Text Debounce',       done: true,  tags: [Tag.State, Tag.Hooks, Tag.Performance],
+    variations: [
+      { id: 'inlineRef',     label: 'inlineRef',       done: true  },
+      { id: 'useDebounce',   label: 'useDebounce hook', done: true },
+    ],
+  },
 
   // Composition
   { id: 'modalDialogDemo',      label: 'Modal Dialog',        done: true,  tags: [Tag.State, Tag.Forms] },

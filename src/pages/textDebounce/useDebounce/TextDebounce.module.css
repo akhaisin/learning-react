@@ -1,0 +1,12 @@
+.description {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  max-width: 560px;
+  line-height: 1.55;
+}
+
+.placeholder {
+  color: #aaa;
+  font-style: italic;
+}
