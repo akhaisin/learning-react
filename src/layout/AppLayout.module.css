@@ -364,6 +364,15 @@
   outline-offset: 2px;
 }
 
+@keyframes help-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(138, 111, 62, 0); }
+  50% { box-shadow: 0 0 0 2px rgba(138, 111, 62, 0.35); }
+}
+
+.help-btn-glow {
+  animation: help-glow 2s ease-in-out infinite;
+}
+
 .is-embedded .repo-link { left: 3.75rem; }
 .is-embedded .help-btn  { left: 6.5rem; }
 

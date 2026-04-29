@@ -112,12 +112,14 @@ function SandboxEditor() {
       <Panel defaultSize={50} minSize={25} className={styles.editorPanel}>
         <div className={styles.tabBar}>
           <button
+            id="tour-sandbox-tab-tsx"
             className={[styles.tab, activeTab === 'tsx' ? styles.tabActive : ''].join(' ')}
             onClick={() => setActiveTab('tsx')}
           >
             Sandbox.tsx
           </button>
           <button
+            id="tour-sandbox-tab-css"
             className={[styles.tab, activeTab === 'css' ? styles.tabActive : ''].join(' ')}
             onClick={() => setActiveTab('css')}
           >
@@ -149,7 +151,7 @@ function SandboxEditor() {
 
       <PanelResizeHandle className={styles.resizeHandle} />
 
-      <Panel defaultSize={50} minSize={25} className={styles.previewPanel}>
+      <Panel id="tour-sandbox-preview" defaultSize={50} minSize={25} className={styles.previewPanel}>
         {!result.ok && (
           <pre className={styles.error}>{result.error}</pre>
         )}

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState, type ComponentType } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useHostSync, MeflyNavReceiver } from 'mefly-nav';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { startTour } from './tour';
 import 'mefly-nav/style.css';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import styles from './AppLayout.module.css';
@@ -46,7 +48,9 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 		pages[0]?.variations ? `${pages[0].id}/${pages[0].variations[0].id}` : (pages[0]?.id ?? ''),
 	);
 	const listRef = useRef<HTMLDivElement>(null);
-	const [helpOpen, setHelpOpen] = useState(false);
+	const [helpSeen, setHelpSeen] = useLocalStorage('learning-react.v1.helpSeen', false);
+	const firstVariationId = pages.find((p) => p.variations)?.id;
+	const firstDoneId = pages.find((p) => p.done)?.id;
 
 	useEffect(() => {
 		const list = listRef.current;
@@ -77,12 +81,14 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 					<header className={styles['panel-header']}>
 						<div className={styles['mode-toggle']}>
 							<button
+								id="tour-exercises-btn"
 								className={[styles['mode-btn'], !isSandbox ? styles['mode-btn-active'] : ''].join(' ')}
 								onClick={() => navigate(lastExerciseId.current)}
 							>
 								Exercises
 							</button>
 							<button
+								id="tour-sandbox-btn"
 								className={[styles['mode-btn'], isSandbox ? styles['mode-btn-active'] : ''].join(' ')}
 								onClick={() => navigate('/sandbox')}
 							>
@@ -91,13 +97,14 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 						</div>
 					</header>
 
-					<div ref={listRef} className={styles['page-list']} role="list">
+					<div ref={listRef} id="tour-nav-list" className={styles['page-list']} role="list">
 						{pages.map((page) => {
 							if (page.variations) {
 								const isGroupActive = page.id === activePageId && !isSandbox;
 								return (
 									<div
 										key={page.id}
+										id={page.id === firstVariationId ? 'tour-first-variation-group' : page.id === firstDoneId ? 'tour-first-done' : undefined}
 										role="listitem"
 										className={[
 											styles['page-item'],
@@ -149,6 +156,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 							return (
 								<NavLink
 									key={page.id}
+									id={page.id === firstDoneId ? 'tour-first-done' : undefined}
 									className={({ isActive }) =>
 										[
 											styles['page-item'],
@@ -185,7 +193,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 						<h2>{panelTitle}</h2>
 					</header>
 
-					<div className={styles['page-preview']}>
+					<div id="tour-preview-panel" className={styles['page-preview']}>
 						<Outlet />
 					</div>
 				</Panel>
@@ -221,46 +229,22 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 			</a>
 
 			<button
-				className={styles['help-btn']}
-				onClick={() => setHelpOpen(true)}
-				aria-label="About this app"
-				title="About"
+				className={[styles['help-btn'], !helpSeen ? styles['help-btn-glow'] : ''].join(' ')}
+				onClick={() => {
+					setHelpSeen(true);
+					if (isSandbox) {
+						navigate('/' + lastExerciseId.current);
+						setTimeout(() => startTour(navigate), 300);
+					} else {
+						startTour(navigate);
+					}
+				}}
+				title="Tour"
 			>
 				<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
 					<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
 				</svg>
 			</button>
-
-			{helpOpen && (
-				<div className={styles['modal-overlay']} onClick={() => setHelpOpen(false)}>
-					<div className={styles['modal']} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="help-title">
-						<button className={styles['modal-close']} onClick={() => setHelpOpen(false)} aria-label="Close">
-							<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-								<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-							</svg>
-						</button>
-						<h2 id="help-title">About this app</h2>
-						<p>
-							This is a React learning playground built around the <strong>coding kata</strong> technique — a practice method borrowed from martial arts where you repeat small, focused exercises until the concepts become muscle memory.
-						</p>
-						<h3>How it works</h3>
-						<ul>
-							<li><strong>Exercises</strong> — a curated list of React kata, each targeting a specific concept: hooks, state, effects, composition, and more. Work through them in order or jump to any topic.</li>
-							<li><strong>Sandbox</strong> — a live editor where you can freely experiment with React code and see the result instantly, without any setup.</li>
-						</ul>
-						<h3>The kata mindset</h3>
-						<p>
-							Each exercise is intentionally small. The goal is not to build features but to deeply understand one idea at a time. Return to the same kata on different days — clarity comes from repetition, not just completion.
-						</p>
-						<p>
-							Some exercises offer multiple <strong>variations</strong> — the same problem solved differently. Each variation isolates a distinct approach so you can compare them side by side and understand the trade-offs.
-						</p>
-						<p>
-							Exercises marked with <span style={{ color: '#7ab87a', fontWeight: 600 }}>✓</span> are ones you have worked through. To mark an exercise as done, set its <code>done</code> flag to <code>true</code> in <code>src/exercises.ts</code> — that is the single registry where all exercises are defined and tracked. There is no wrong order — follow your curiosity.
-						</p>
-					</div>
-				</div>
-			)}
 		</main>
 	);
 }

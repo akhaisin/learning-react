@@ -45,7 +45,7 @@ function ExerciseViewer({ exerciseId, component: Component, sourceFiles }: Props
 
 	return (
 		<div className={styles.viewer}>
-			<div className={styles.tabBar} role="tablist">
+			<div id="tour-source-tabs" className={styles.tabBar} role="tablist">
 				<button
 					role="tab"
 					aria-selected={activeTab === '__preview__'}
