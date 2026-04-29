@@ -121,7 +121,7 @@ const pages: AppPage[] = exercises.flatMap((exercise, index): AppPage[] => {
 const DEFAULT_PAGE_ID_KEY = 'DEFAULT_PAGE_ID';
 
 const resolveDefaultPageId = (fallbackPageId: string) => {
-  const storedPageId = window.localStorage.getItem(DEFAULT_PAGE_ID_KEY);
+  const storedPageId = localStorage.getItem(DEFAULT_PAGE_ID_KEY);
   const hasStoredPage = pages.some((page) => {
     if (page.variations) {
       return page.variations.some((v) => `${page.id}/${v.id}` === storedPageId);
@@ -149,7 +149,7 @@ function App() {
   const defaultPageId = resolveDefaultPageId(fallbackPageId);
 
   const handleSelectedPageChange = (pageId: string) => {
-    window.localStorage.setItem(DEFAULT_PAGE_ID_KEY, pageId);
+    localStorage.setItem(DEFAULT_PAGE_ID_KEY, pageId);
   };
 
   return (

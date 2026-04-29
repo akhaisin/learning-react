@@ -64,7 +64,7 @@ export const exercises: Exercise[] = [
   // Intermediate hooks
   { id: 'formWithValidation',   label: 'Form With Validation', done: false, tags: [Tag.State, Tag.Forms, Tag.TypeScript] },
   { id: 'multiStepForm',        label: 'Multi-Step Form',     done: false, tags: [Tag.State, Tag.Reducer, Tag.Forms] },
-  { id: 'useLocalStorage',      label: 'useLocalStorage',     done: false, tags: [Tag.Hooks, Tag.Effects, Tag.TypeScript] },
+  { id: 'useLocalStorage',      label: 'useLocalStorage',     done: true, tags: [Tag.Hooks, Tag.Effects, Tag.TypeScript] },
 
   // Context & state machines
   { id: 'themeContext',         label: 'Theme Context',       done: false, tags: [Tag.Context, Tag.Hooks] },
