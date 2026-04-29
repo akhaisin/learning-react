@@ -45,7 +45,15 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 	const lastExerciseId = useRef(
 		pages[0]?.variations ? `${pages[0].id}/${pages[0].variations[0].id}` : (pages[0]?.id ?? ''),
 	);
+	const listRef = useRef<HTMLDivElement>(null);
 	const [helpOpen, setHelpOpen] = useState(false);
+
+	useEffect(() => {
+		const list = listRef.current;
+		if (!list) return;
+		const activeEl = list.querySelector<HTMLElement>(`.${styles['is-active']}`);
+		activeEl?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+	}, [activePageId, activeVariationId]);
 
 	useEffect(() => {
 		if (!isSandbox && activePage) {
@@ -83,7 +91,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 						</div>
 					</header>
 
-					<div className={styles['page-list']} role="list" aria-label="Available page components">
+					<div ref={listRef} className={styles['page-list']} role="list">
 						{pages.map((page) => {
 							if (page.variations) {
 								const isGroupActive = page.id === activePageId && !isSandbox;
