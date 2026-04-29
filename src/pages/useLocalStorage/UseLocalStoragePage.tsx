@@ -18,28 +18,34 @@ function UseLocalStorage() {
       <form onSubmit={(e) => e.preventDefault()}>
         <ul className={styles.list}>
           <li>
-            <label>Input 1: </label>
-            <input
-              type='text'
-              value={input1}
-              onChange={(e) => setInput1(e.target.value)}
-            />
+            <label>Input 1:
+              <input
+                type='text'
+                name='input1'
+                value={input1}
+                onChange={(e) => setInput1(e.target.value)}
+              />
+            </label>
           </li>
           <li>
-            <label>Input 2: </label>
-            <input
-              type='text'
-              value={input2}
-              onChange={(e) => setInput2(e.target.value)}
-            />
+            <label>Input 2:
+              <input
+                type='text'
+                name='input2'
+                value={input2}
+                onChange={(e) => setInput2(e.target.value)}
+              />
+            </label>
           </li>
           <li>
-            <label>Input 3: </label>
-            <input
-              type='text'
-              value={input3}
-              onChange={(e) => setInput3(e.target.value)}
-            />
+            <label>Input 3:
+              <input
+                type='text'
+                name='input3'
+                value={input3}
+                onChange={(e) => setInput3(e.target.value)}
+              />
+            </label>
           </li>
         </ul>
       </form>
