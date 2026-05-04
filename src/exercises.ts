@@ -71,6 +71,12 @@ export const exercises: Exercise[] = [
   { id: 'toastNotifications',  label: 'Toast Notifications', done: false, tags: [Tag.Context, Tag.Reducer, Tag.Hooks] },
 
   // DOM & interaction
+  { id: 'flipBox',              label: 'Flip Box',            done: true,  tags: [Tag.State, Tag.DOM],
+    variations: [
+      { id: 'hover', label: 'Flip on Hover', done: true },
+      { id: 'click', label: 'Flip on Click', done: true },
+    ],
+  },
   { id: 'dragAndDrop',          label: 'Drag And Drop',       done: false, tags: [Tag.State, Tag.DOM, Tag.DragDrop] },
   { id: 'autocomplete',         label: 'Autocomplete',        done: false, tags: [Tag.State, Tag.Hooks, Tag.Async, Tag.Forms] },
 

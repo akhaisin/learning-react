@@ -1,0 +1,50 @@
+.description {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  max-width: 560px;
+  line-height: 1.55;
+}
+
+.scene {
+  width: 200px;
+  height: 200px;
+  perspective: 600px;
+  cursor: default;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.scene:hover .card {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  user-select: none;
+}
+
+.front {
+  background: #4f46e5;
+  color: white;
+}
+
+.back {
+  background: #059669;
+  color: white;
+  transform: rotateY(180deg);
+}
