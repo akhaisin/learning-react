@@ -11,8 +11,16 @@ function FlipBox() {
       </p>
       <div className={styles.scene}>
         <div className={styles.card}>
-          <div className={`${styles.face} ${styles.front}`}>Front</div>
-          <div className={`${styles.face} ${styles.back}`}>Back</div>
+          <div className={`${styles.face} ${styles.front}`}>
+            <img src="/learning-react/favicon.svg" width={100} height={100} alt="React atom icon" />
+            <span className={styles.svgBadge}>SVG</span>
+          </div>
+          <div className={`${styles.face} ${styles.back}`}>
+            <p className={styles.backText}>
+              React atom icon — three elliptical orbits around a nucleus, the symbol of the
+              React.js framework.
+            </p>
+          </div>
         </div>
       </div>
     </div>
