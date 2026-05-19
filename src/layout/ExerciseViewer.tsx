@@ -4,6 +4,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { css } from '@codemirror/lang-css';
 import { oneDark } from '@codemirror/theme-one-dark';
+import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import styles from './ExerciseViewer.module.css';
 
 type Props = {
@@ -21,69 +22,74 @@ function getExtensions(filename: string) {
 }
 
 function sortFiles(files: [string, string][]): [string, string][] {
-	return [...files].sort(([a], [b]) => {
-		if (a.endsWith('Page.tsx')) return -1;
-		if (b.endsWith('Page.tsx')) return 1;
-		return a.localeCompare(b);
-	});
+	const fileRank: Record<string, number> = {
+		'Page.tsx': 0,
+		'Component.tsx': 1,
+		'utils.ts': 2,
+		'Component.module.css': 3,
+	};
+
+	return [...files].sort(([a], [b]) => (fileRank[a] ?? 99) - (fileRank[b] ?? 99));
 }
 
 function ExerciseViewer({ exerciseId, component: Component, sourceFiles }: Props) {
 	const tabMemory = useRef<Record<string, string>>({});
-	const [activeTab, setActiveTab] = useState('__preview__');
+	const sortedFiles = sortFiles(Object.entries(sourceFiles));
+	const [activeTab, setActiveTab] = useState('');
 
 	useEffect(() => {
-		setActiveTab(tabMemory.current[exerciseId] ?? '__preview__');
-	}, [exerciseId]);
+		const rememberedTab = tabMemory.current[exerciseId];
+		const fallbackTab = sortedFiles[0]?.[0] ?? '';
+		const nextTab = rememberedTab && sourceFiles[rememberedTab] ? rememberedTab : fallbackTab;
+		setActiveTab(nextTab);
+	}, [exerciseId, sortedFiles, sourceFiles]);
 
 	const handleTabChange = (tab: string) => {
 		tabMemory.current[exerciseId] = tab;
 		setActiveTab(tab);
 	};
 
-	const sortedFiles = sortFiles(Object.entries(sourceFiles));
-
 	return (
-		<div className={styles.viewer}>
-			<div id="tour-source-tabs" className={styles.tabBar} role="tablist">
-				<button
-					role="tab"
-					aria-selected={activeTab === '__preview__'}
-					className={[styles.tab, activeTab === '__preview__' ? styles.tabActive : ''].join(' ')}
-					onClick={() => handleTabChange('__preview__')}
-				>
-					Preview
-				</button>
-				{sortedFiles.map(([filename]) => (
-					<button
-						key={filename}
-						role="tab"
-						aria-selected={activeTab === filename}
-						className={[styles.tab, activeTab === filename ? styles.tabActive : ''].join(' ')}
-						onClick={() => handleTabChange(filename)}
-					>
-						{filename}
-					</button>
-				))}
-			</div>
+		<PanelGroup orientation="horizontal" className={styles.viewer}>
+			<Panel defaultSize={48} minSize={25} className={styles.sourcePanel}>
+				<div id="tour-source-tabs" className={styles.tabBar} role="tablist">
+					{sortedFiles.map(([filename]) => (
+						<button
+							key={filename}
+							role="tab"
+							aria-selected={activeTab === filename}
+							className={[styles.tab, activeTab === filename ? styles.tabActive : ''].join(' ')}
+							onClick={() => handleTabChange(filename)}
+						>
+							{filename}
+						</button>
+					))}
+				</div>
 
-			<div className={styles.content}>
-				{activeTab === '__preview__' ? (
-					<div className={styles.preview}>
-						<Component />
-					</div>
-				) : (
-					<CodeMirror
-						value={sourceFiles[activeTab] ?? ''}
-						extensions={getExtensions(activeTab)}
-						theme={oneDark}
-						readOnly
-						height="100%"
-						style={{ height: '100%' }}
-					/>
-				)}
-			</div>
-		</div>
+				<div className={styles.content}>
+					{activeTab ? (
+						<CodeMirror
+							value={sourceFiles[activeTab] ?? ''}
+							extensions={getExtensions(activeTab)}
+							theme={oneDark}
+							readOnly
+							height="100%"
+							style={{ height: '100%' }}
+						/>
+					) : (
+						<div className={styles.emptyState}>No source files available.</div>
+					)}
+				</div>
+			</Panel>
+
+			<PanelResizeHandle className={styles.resizeHandle} />
+
+			<Panel defaultSize={52} minSize={25} className={styles.previewPanel}>
+				<div className={styles.preview}>
+					<Component />
+				</div>
+			</Panel>
+		</PanelGroup>
 	);
 }
 

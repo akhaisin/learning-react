@@ -1,9 +1,19 @@
 .viewer {
-	display: flex;
-	flex-direction: column;
 	width: 100%;
 	height: 100%;
 	min-height: 0;
+}
+
+.sourcePanel {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+	padding: 1rem;
+	border: 1px solid #d8cfbf;
+	border-radius: 20px;
+	background: rgba(255, 250, 241, 0.72);
+	box-shadow: 0 12px 28px rgba(108, 83, 35, 0.06);
 }
 
 .tabBar {
@@ -48,13 +58,77 @@
 .content {
 	flex: 1;
 	min-height: 0;
+	overflow: hidden;
+}
+
+.previewPanel {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
 	overflow: auto;
+	padding: 1rem;
+	border: 1px solid #d8cfbf;
+	border-radius: 20px;
+	background: rgba(255, 250, 241, 0.72);
+	box-shadow: 0 12px 28px rgba(108, 83, 35, 0.06);
+}
+
+.resizeHandle {
+	width: 5px;
+	flex-shrink: 0;
+	background: transparent;
+	cursor: col-resize;
+	position: relative;
+	transition: background-color 0.15s ease;
+	margin: 0 0.5rem;
+}
+
+.resizeHandle::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	left: 2px;
+	width: 1px;
+	background: #d8cfbf;
+	transition: background-color 0.15s ease, left 0.15s ease, width 0.15s ease;
+}
+
+.resizeHandle:hover::after,
+.resizeHandle[data-separator-state="drag"]::after {
+	left: 1px;
+	width: 3px;
+	background: #8a6f3e;
 }
 
 .preview {
 	display: grid;
 	place-items: center;
 	min-height: 100%;
+}
+
+.emptyState {
+	display: grid;
+	place-items: center;
+	height: 100%;
+	min-height: 12rem;
+	border: 1px dashed #d8cfbf;
+	border-radius: 12px;
+	color: #8a7a60;
+	background: rgba(255, 253, 248, 0.8);
+}
+
+@media (max-width: 900px) {
+	.viewer {
+		flex-direction: column;
+	}
+
+	.resizeHandle {
+		display: none;
+	}
+
+	.previewPanel {
+		min-height: 20rem;
+	}
 }
 
 .codeBlock {
