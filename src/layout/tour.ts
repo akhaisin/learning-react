@@ -52,21 +52,21 @@ export function startTour(navigate: (path: string) => void): void {
 				},
 			},
 			{
-				element: '#tour-preview-panel',
-				popover: {
-					title: 'Preview',
-					description: 'The <strong>Preview</strong> tab renders your exercise live in the browser.',
-					side: 'left',
-					align: 'start',
-				},
-			},
-			{
 				element: '#tour-source-tabs',
 				popover: {
 					title: 'Solution source files',
 					description:
-						"Switch tabs to browse the exercise's source files — shown read-only with full syntax highlighting.",
+						"Use the left-side tabs to browse the exercise's source files while keeping the result visible at the same time.",
 					side: 'bottom',
+					align: 'start',
+				},
+			},
+			{
+				element: '#tour-preview-panel',
+				popover: {
+					title: 'Preview panel',
+					description: 'The right-side preview panel renders the exercise live in the browser as you read the source.',
+					side: 'left',
 					align: 'start',
 				},
 			},

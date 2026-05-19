@@ -84,7 +84,7 @@ function ExerciseViewer({ exerciseId, component: Component, sourceFiles }: Props
 
 			<PanelResizeHandle className={styles.resizeHandle} />
 
-			<Panel defaultSize={52} minSize={25} className={styles.previewPanel}>
+			<Panel id="tour-preview-panel" defaultSize={52} minSize={25} className={styles.previewPanel}>
 				<div className={styles.preview}>
 					<Component />
 				</div>

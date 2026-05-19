@@ -193,7 +193,7 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
 						<h2>{panelTitle}</h2>
 					</header>
 
-					<div id="tour-preview-panel" className={styles['page-preview']}>
+					<div className={styles['page-preview']}>
 						<Outlet />
 					</div>
 				</Panel>
