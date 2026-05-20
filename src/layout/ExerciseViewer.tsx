@@ -8,6 +8,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
 import { transform } from "sucrase";
 import { useDebounce } from "../hooks/useDebounce";
+import * as vitestAdapter from "../test/vitest-adapter";
 import { compileAndRun, type CompilationResult } from "../utils/compiler";
 import { runTestSuite, type TestSuiteResult } from "../utils/testRunner";
 import styles from "./ExerciseViewer.module.css";
@@ -262,8 +263,11 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
 
           const testModule = { exports: {} as any };
           const localRequire = (reqPath: string) => {
-            let normalized = reqPath;
-            if (normalized.startsWith("./")) normalized = normalized.slice(2);
+            const normalized = reqPath.replace(/^((\.\.\/)|(\.\/))+/, "");
+
+            if (/test\/vitest-adapter(?:\.[a-z]+)?$/i.test(normalized)) {
+			  return vitestAdapter;
+			}
 
             const matchedKey = Object.keys(modules).find(
               (k) => k.replace(/\.[a-zA-Z0-9]+$/, "").toLowerCase() === normalized.toLowerCase()

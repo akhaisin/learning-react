@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from "vitest";
-import { render, fireEvent, renderHook, act } from "@testing-library/react";
+import { render, fireEvent, renderHook, act, screen } from "@testing-library/react";
 import * as React from "react";
+import {
+  clearVitestAdapterContext,
+  setVitestAdapterContext,
+  type VitestAdapterHelpers,
+} from "./vitest-adapter";
 
 // Dynamically import only the custom student test files under src/pages
 const testModules = import.meta.glob([
@@ -27,22 +32,29 @@ for (const [testPath, testModule] of Object.entries(testModules)) {
 
     const exerciseLabel = folderPath.replace("../pages/", "");
     const testFilename = testPath.substring(testPath.lastIndexOf("/") + 1);
+    const helpers: VitestAdapterHelpers = {
+      describe,
+      it,
+      expect: buildExpect(expect),
+      render: (element?: React.ReactElement) => {
+        if (element) return render(element);
+        if (Component) return render(React.createElement(Component));
+        throw new Error("render() requires an element argument when no Component is available");
+      },
+      renderHook,
+      fireEvent,
+      screen,
+      act,
+      beforeEach,
+    };
 
     describe(`Exercise: ${exerciseLabel} > ${testFilename}`, () => {
-      runTests({
-        describe,
-        it,
-        expect: buildExpect(expect),
-        render: (element?: React.ReactElement) => {
-          if (element) return render(element);
-          if (Component) return render(React.createElement(Component));
-          throw new Error("render() requires an element argument when no Component is available");
-        },
-        renderHook,
-        fireEvent,
-        act,
-        beforeEach,
-      });
+      setVitestAdapterContext(helpers);
+      try {
+        runTests(helpers);
+      } finally {
+        clearVitestAdapterContext();
+      }
     });
   }
 }

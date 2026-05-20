@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function runTests({ describe, it, expect, render, fireEvent }: any) {
+import { describe, it, expect, render, fireEvent } from '../../test/vitest-adapter';
+
+export function runTests() {
   describe("Toggle Button Exercise", () => {
     it("renders the button initially with OFF label", () => {
       const { getByText } = render();

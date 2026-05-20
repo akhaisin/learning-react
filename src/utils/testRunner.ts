@@ -2,6 +2,11 @@
 import * as React from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
+import {
+  clearVitestAdapterContext,
+  setVitestAdapterContext,
+  type VitestAdapterHelpers,
+} from "../test/vitest-adapter";
 
 export interface TestCaseResult {
   name: string;
@@ -98,7 +103,7 @@ const screen = {
   },
 };
 
-function expect(value: any) {
+function browserExpect(value: any) {
   const matchers = (isNegated: boolean) => ({
     toBe: (expected: any) => {
       const condition = value === expected;
@@ -174,7 +179,7 @@ let activeSuite: TestSuiteResult | null = null;
 const suites: TestSuiteResult[] = [];
 
 export function runTestSuite(
-  runTestsFn: (helpers: any) => void,
+  runTestsFn: (helpers?: VitestAdapterHelpers) => void,
   component: React.ComponentType,
   container: HTMLElement
 ): TestSuiteResult[] {
@@ -312,18 +317,22 @@ export function runTestSuite(
     return { result };
   };
 
+  const helpers: VitestAdapterHelpers = {
+  describe: browserDescribe,
+  it: browserIt,
+  expect: browserExpect,
+  render: browserRender,
+  renderHook: browserRenderHook,
+  fireEvent,
+  screen,
+  act: (fn: () => void) => flushSync(fn),
+  beforeEach: browserBeforeEach,
+  };
+
+  setVitestAdapterContext(helpers);
+
   try {
-    runTestsFn({
-      describe: browserDescribe,
-      it: browserIt,
-      expect,
-      render: browserRender,
-      renderHook: browserRenderHook,
-      fireEvent,
-      screen,
-      act: (fn: () => void) => flushSync(fn),
-      beforeEach: browserBeforeEach,
-    });
+    runTestsFn(helpers);
   } catch (err: any) {
     if (activeSuite) {
       (activeSuite as TestSuiteResult).cases.push({
@@ -344,6 +353,8 @@ export function runTestSuite(
         children: [],
       });
     }
+  } finally {
+	clearVitestAdapterContext();
   }
 
   // Final cleanup

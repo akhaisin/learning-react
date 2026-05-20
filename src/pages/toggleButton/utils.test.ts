@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import useToggle from './utils';
+import { describe, it, expect, renderHook, act } from '../../test/vitest-adapter';
 
-export function runTests({ describe, it, expect, renderHook, act }: any) {
+export function runTests() {
   describe('useToggle', () => {
     it('defaults to false', () => {
       const { result } = renderHook(() => useToggle());

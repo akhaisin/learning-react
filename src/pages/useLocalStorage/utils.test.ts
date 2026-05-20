@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import useLocalStorage from './utils';
+import { describe, it, expect, renderHook, act, beforeEach } from '../../test/vitest-adapter';
 
-export function runTests({ describe, it, expect, renderHook, act, beforeEach }: any) {
+export function runTests() {
   beforeEach(() => localStorage.clear());
 
   describe('useLocalStorage', () => {
@@ -34,6 +34,7 @@ export function runTests({ describe, it, expect, renderHook, act, beforeEach }: 
       it('persists the value to localStorage', () => {
         const { result } = renderHook(() => useLocalStorage('k', 0));
         act(() => result.current[1](99));
+        expect(localStorage.getItem('k')).not.toBeNull();
         expect(JSON.parse(localStorage.getItem('k')!)).toBe(99);
       });
 
@@ -41,11 +42,12 @@ export function runTests({ describe, it, expect, renderHook, act, beforeEach }: 
         const { result } = renderHook(() => useLocalStorage('k', { a: 1 }));
         act(() => result.current[1]({ a: 2 }));
         expect(result.current[0]).toEqual({ a: 2 });
+        expect(localStorage.getItem('k')).not.toBeNull();
         expect(JSON.parse(localStorage.getItem('k')!)).toEqual({ a: 2 });
       });
 
       it('handles array values', () => {
-        const { result } = renderHook(() => useLocalStorage('k', []));
+        const { result } = renderHook(() => useLocalStorage<number[]>('k', []));
         act(() => result.current[1]([1, 2, 3]));
         expect(result.current[0]).toEqual([1, 2, 3]);
       });
