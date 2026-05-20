@@ -49,32 +49,24 @@ Wait for the user's response before proceeding. If they provide their own text, 
 
 ### Single mode
 
-Create `src/pages/<camelCaseId>/<PascalCaseId>.module.css`:
+For the exercise, create four files inside `src/pages/<camelCaseId>/`:
 
+**`Component.module.css`**:
 ```css
-.description {
-  color: #666;
-  font-size: 0.875rem;
-  margin-bottom: 1.25rem;
-  max-width: 560px;
-  line-height: 1.55;
-}
-
 .placeholder {
   color: #aaa;
   font-style: italic;
 }
 ```
 
-Create `src/pages/<camelCaseId>/<PascalCaseId>Page.tsx`:
-
+**`Component.tsx`**:
 ```tsx
-import styles from './<PascalCaseId>.module.css';
+import styles from './Component.module.css';
 
 function <PascalCaseId>() {
   return (
     <div>
-      <p className={styles.description}>
+      <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: '1.25rem', maxWidth: '520px', lineHeight: '1.55' }}>
         {/* Confirmed description as JSX. Wrap inline code in <code>. Use {' '} for spacing. */}
       </p>
       <p className={styles.placeholder}>Not implemented yet.</p>
@@ -85,22 +77,38 @@ function <PascalCaseId>() {
 export default <PascalCaseId>;
 ```
 
+**`Page.tsx`**:
+```tsx
+import Component from './Component';
+
+function Page() {
+  return <Component />;
+}
+
+export default Page;
+```
+
+**`utils.ts`**:
+```typescript
+// Helper functions and custom hooks for <PascalCaseId>
+```
+
 ### Variation mode
 
-For **each variation** (`id`, `Label`), create two files inside `src/pages/<camelCaseId>/<variationId>/`:
+For **each variation** (`id`, `Label`), create four files inside `src/pages/<camelCaseId>/<variationId>/`:
 
-**`<PascalCaseId>.module.css`** — same CSS as single mode above.
+**`Component.module.css`** — same CSS as single mode above.
 
-**`<PascalCaseId>Page.tsx`** — same structure as single mode, but using that variation's confirmed description:
+**`Component.tsx`** — same structure as single mode above, but using that variation's confirmed description:
 
 ```tsx
-import styles from './<PascalCaseId>.module.css';
+import styles from './Component.module.css';
 
 function <PascalCaseId>() {
   return (
     <div>
-      <p className={styles.description}>
-        {/* This variation's confirmed description as JSX. */}
+      <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: '1.25rem', maxWidth: '520px', lineHeight: '1.55' }}>
+        {/* This variation's confirmed description as JSX. Wrap inline code in <code>. Use {' '} for spacing. */}
       </p>
       <p className={styles.placeholder}>Not implemented yet.</p>
     </div>
@@ -110,7 +118,23 @@ function <PascalCaseId>() {
 export default <PascalCaseId>;
 ```
 
-Note: the component name is the same (`<PascalCaseId>`) in every variation — each file lives in its own subdirectory so there is no naming conflict.
+**`Page.tsx`** — same standard wrapper as single mode above:
+
+```tsx
+import Component from './Component';
+
+function Page() {
+  return <Component />;
+}
+
+export default Page;
+```
+
+**`utils.ts`** — same helper file placeholder:
+
+```typescript
+// Helper functions and custom hooks for <PascalCaseId>
+```
 
 ---
 
@@ -224,33 +248,25 @@ Wait for the user's response before proceeding.
 
 ### Step C — Create the new variation files
 
-Create `src/pages/<camelCaseId>/<variationId>/<PascalCaseId>.module.css`:
+Create four files inside `src/pages/<camelCaseId>/<variationId>/`:
 
+**`Component.module.css`**:
 ```css
-.description {
-  color: #666;
-  font-size: 0.875rem;
-  margin-bottom: 1.25rem;
-  max-width: 560px;
-  line-height: 1.55;
-}
-
 .placeholder {
   color: #aaa;
   font-style: italic;
 }
 ```
 
-Create `src/pages/<camelCaseId>/<variationId>/<PascalCaseId>Page.tsx`:
-
+**`Component.tsx`**:
 ```tsx
-import styles from './<PascalCaseId>.module.css';
+import styles from './Component.module.css';
 
 function <PascalCaseId>() {
   return (
     <div>
-      <p className={styles.description}>
-        {/* Confirmed description as JSX. */}
+      <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: '1.25rem', maxWidth: '520px', lineHeight: '1.55' }}>
+        {/* Confirmed description as JSX. Wrap inline code in <code>. Use {' '} for spacing. */}
       </p>
       <p className={styles.placeholder}>Not implemented yet.</p>
     </div>
@@ -258,6 +274,22 @@ function <PascalCaseId>() {
 }
 
 export default <PascalCaseId>;
+```
+
+**`Page.tsx`**:
+```tsx
+import Component from './Component';
+
+function Page() {
+  return <Component />;
+}
+
+export default Page;
+```
+
+**`utils.ts`**:
+```typescript
+// Helper functions and custom hooks for <PascalCaseId>
 ```
 
 ### Step D — Update exercises.ts
