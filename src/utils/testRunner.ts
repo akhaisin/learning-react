@@ -21,20 +21,24 @@ export interface TestSuiteResult {
 }
 
 let testRoot: any = null;
+let activeScreenRoot: HTMLElement | null = null;
+
+const TEST_SANDBOX_ROOT_ID = "test-sandbox-root";
+const TEST_PORTAL_ROOT_ID = "test-portal-root";
 
 function findByTextContent(root: HTMLElement, text: string): HTMLElement | null {
-  const normalizedSearch = text.toLowerCase().trim();
+  const normalizedSearch = text.toLowerCase().trim().replace(/\s+/g, " ");
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
   let node = walker.nextNode() as HTMLElement | null;
   let bestMatch: HTMLElement | null = null;
 
   while (node) {
-    const nodeText = node.textContent?.toLowerCase().trim() || "";
-    if (nodeText.includes(normalizedSearch)) {
+    const nodeText = node.textContent?.toLowerCase().trim().replace(/\s+/g, " ") || "";
+    if (nodeText === normalizedSearch) {
       let childMatches = false;
       for (let i = 0; i < node.children.length; i++) {
-        const childText = node.children[i].textContent?.toLowerCase().trim() || "";
-        if (childText.includes(normalizedSearch)) {
+        const childText = node.children[i].textContent?.toLowerCase().trim().replace(/\s+/g, " ") || "";
+        if (childText === normalizedSearch) {
           childMatches = true;
           break;
         }
@@ -82,32 +86,36 @@ const fireEvent = {
       element.dispatchEvent(event);
     });
   },
+  scroll: (element: HTMLElement, eventInit: { target: { scrollTop: number } }) => {
+    flushSync(() => {
+      element.scrollTop = eventInit.target.scrollTop;
+      const event = new Event("scroll", { bubbles: true });
+      element.dispatchEvent(event);
+    });
+  },
 };
+
+function getScreenRoot() {
+  return activeScreenRoot ?? document.body;
+}
 
 const screen = {
   getByText: (text: string) => {
-    const testDiv = document.getElementById("test-sandbox-root");
-    if (!testDiv) throw new Error("No active render container found");
-    const el = findByTextContent(testDiv, text);
+    const root = getScreenRoot();
+    const el = findByTextContent(root, text);
     if (!el) throw new Error(`Element with text "${text}" not found`);
     return el;
   },
   queryByText: (text: string) => {
-    const testDiv = document.getElementById("test-sandbox-root");
-    if (!testDiv) return null;
-    return findByTextContent(testDiv, text);
+    return findByTextContent(getScreenRoot(), text);
   },
   getByPlaceholderText: (placeholder: string) => {
-    const testDiv = document.getElementById("test-sandbox-root");
-    if (!testDiv) throw new Error("No active render container found");
-    const el = testDiv.querySelector(`[placeholder="${placeholder}"]`) as HTMLElement;
+    const el = getScreenRoot().querySelector(`[placeholder="${placeholder}"]`) as HTMLElement;
     if (!el) throw new Error(`Element with placeholder "${placeholder}" not found`);
     return el;
   },
   getByTestId: (testId: string) => {
-    const testDiv = document.getElementById("test-sandbox-root");
-    if (!testDiv) throw new Error("No active render container found");
-    const el = testDiv.querySelector(`[data-testid="${testId}"]`) as HTMLElement;
+    const el = getScreenRoot().querySelector(`[data-testid="${testId}"]`) as HTMLElement;
     if (!el) throw new Error(`Element with data-testid "${testId}" not found`);
     return el;
   },
@@ -273,8 +281,13 @@ export function runTestSuite(
 
     container.innerHTML = "";
     const testDiv = document.createElement("div");
-    testDiv.id = "test-sandbox-root";
+    testDiv.id = TEST_SANDBOX_ROOT_ID;
     container.appendChild(testDiv);
+
+    const portalDiv = document.createElement("div");
+    portalDiv.id = TEST_PORTAL_ROOT_ID;
+    container.appendChild(portalDiv);
+    activeScreenRoot = container;
 
     const el = element || React.createElement(component);
 
@@ -365,6 +378,7 @@ export function runTestSuite(
     }
   } finally {
 	clearVitestAdapterContext();
+    activeScreenRoot = null;
   }
 
   // Final cleanup

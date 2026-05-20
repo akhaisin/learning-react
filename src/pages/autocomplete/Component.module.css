@@ -1,0 +1,49 @@
+.container {
+	display: grid;
+	gap: 1rem;
+	max-width: 480px;
+}
+
+.description {
+	margin: 0;
+	color: #666;
+	font-size: 0.875rem;
+	line-height: 1.55;
+}
+
+.field {
+	position: relative;
+}
+
+.field input {
+	width: 100%;
+	padding: 0.75rem 0.8rem;
+	border: 1px solid #c6cfde;
+	border-radius: 0.5rem;
+	font: inherit;
+}
+
+.menu {
+	position: absolute;
+	z-index: 1;
+	top: calc(100% + 0.4rem);
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 0.4rem;
+	list-style: none;
+	border: 1px solid #d9dde7;
+	border-radius: 0.75rem;
+	background: #fff;
+	box-shadow: 0 12px 32px rgba(23, 32, 51, 0.12);
+}
+
+.item {
+	padding: 0.6rem 0.7rem;
+	border-radius: 0.45rem;
+	cursor: pointer;
+}
+
+.active {
+	background: #f3f4f6;
+}

@@ -1,0 +1,33 @@
+.container {
+	display: grid;
+	gap: 1rem;
+	max-width: 560px;
+}
+
+.description {
+	margin: 0;
+	color: #666;
+	font-size: 0.875rem;
+	line-height: 1.55;
+}
+
+.viewport {
+	overflow: auto;
+	border: 1px solid #d9dde7;
+	border-radius: 0.75rem;
+	background: #fff;
+}
+
+.spacer {
+	position: relative;
+}
+
+.row {
+	position: absolute;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	padding: 0 0.9rem;
+	border-bottom: 1px solid #f2f4f7;
+}

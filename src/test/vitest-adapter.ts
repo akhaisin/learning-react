@@ -29,6 +29,7 @@ type FireEventHelpers = {
 		eventInit: { target: { value: string } }
 	) => void;
 	keyDown: (element: HTMLElement, init: KeyboardEventInit) => void;
+	scroll: (element: HTMLElement, eventInit: { target: { scrollTop: number } }) => void;
 };
 
 type ScreenHelpers = {
@@ -123,6 +124,9 @@ export const fireEvent: FireEventHelpers = {
 	},
 	keyDown(element, init) {
 		return getHelpers().fireEvent.keyDown(element, init);
+	},
+	scroll(element, eventInit) {
+		return getHelpers().fireEvent.scroll(element, eventInit);
 	},
 };
 

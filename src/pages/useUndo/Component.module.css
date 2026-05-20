@@ -1,0 +1,46 @@
+.container {
+	display: grid;
+	gap: 1rem;
+	max-width: 560px;
+}
+
+.description {
+	margin: 0;
+	color: #666;
+	font-size: 0.875rem;
+	line-height: 1.55;
+}
+
+.card {
+	display: grid;
+	gap: 0.9rem;
+	padding: 1rem;
+	border: 1px solid #d9dde7;
+	border-radius: 0.75rem;
+	background: #fff;
+}
+
+.input {
+	padding: 0.75rem 0.8rem;
+	border: 1px solid #c6cfde;
+	border-radius: 0.5rem;
+	font: inherit;
+}
+
+.actions {
+	display: flex;
+	gap: 0.75rem;
+}
+
+.button {
+	padding: 0.7rem 0.9rem;
+	border: 1px solid #c6cfde;
+	border-radius: 0.5rem;
+	background: #f7f9fc;
+	font: inherit;
+}
+
+.status {
+	margin: 0;
+	color: #40516d;
+}

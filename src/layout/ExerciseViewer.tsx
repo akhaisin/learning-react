@@ -136,6 +136,11 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
   const tabMemory = useRef<Record<string, string>>({});
   const sortedFiles = sortFiles(Object.entries(sourceFiles));
 
+  const getCodeStorageKeys = (filename: string) => ({
+    raw: `learning-react.v1.code.${exerciseId}.${filename}.raw`,
+    base: `learning-react.v1.code.${exerciseId}.${filename}.base`,
+  });
+
   // Filter out companion files (.clear.tsx) and vitest runner files from being tabs, but keep editable test files!
   const editorTabs = sortedFiles.filter(
     ([filename]) =>
@@ -158,9 +163,21 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
   const loadCodeState = () => {
     const code: Record<string, string> = {};
     editorTabs.forEach(([filename, originalContent]) => {
-      const key = `learning-react.v1.code.${exerciseId}.${filename}.raw`;
-      const saved = localStorage.getItem(key);
-      code[filename] = saved !== null ? saved : originalContent;
+      const keys = getCodeStorageKeys(filename);
+      const saved = localStorage.getItem(keys.raw);
+      const savedBase = localStorage.getItem(keys.base);
+
+      if (saved !== null && savedBase === originalContent) {
+        code[filename] = saved;
+        return;
+      }
+
+      if (saved !== null) {
+        localStorage.removeItem(keys.raw);
+        localStorage.removeItem(keys.base);
+      }
+
+      code[filename] = originalContent;
     });
     return code;
   };
@@ -182,7 +199,7 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
     // Clear test results
     setTestResults([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exerciseId]);
+  }, [exerciseId, sourceFiles]);
 
   const handleTabChange = (tab: string) => {
     tabMemory.current[exerciseId] = tab;
@@ -195,8 +212,9 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
     setEditedFiles(nextFiles);
 
     // Persist immediately to localStorage
-    const key = `learning-react.v1.code.${exerciseId}.${activeTab}.raw`;
-    localStorage.setItem(key, value);
+    const keys = getCodeStorageKeys(activeTab);
+    localStorage.setItem(keys.raw, value);
+    localStorage.setItem(keys.base, sourceFiles[activeTab] || "");
 
     // Reset tests status and unmark exercise as completed on any code modification
     setTestResults([]);

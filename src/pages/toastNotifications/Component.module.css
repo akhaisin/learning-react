@@ -6,7 +6,68 @@
   line-height: 1.55;
 }
 
-.placeholder {
-  color: #aaa;
-  font-style: italic;
+.container {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  display: grid;
+  gap: 1rem;
+  max-width: 560px;
+  padding: 1rem;
+  border: 1px solid #d9dde7;
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.actionButton,
+.dismissButton {
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.actionButton {
+  justify-self: start;
+  border: 0;
+  background: #172033;
+  color: #fff;
+  font-weight: 700;
+}
+
+.dismissButton {
+  border: 1px solid #c6cfde;
+  background: #fff;
+}
+
+.viewport {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  gap: 0.75rem;
+  width: min(320px, calc(100vw - 2rem));
+  z-index: 20;
+}
+
+.toast {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #d9dde7;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(23, 32, 51, 0.12);
+}
+
+.toast strong,
+.toast p {
+  margin: 0;
+}
+
+.toast p {
+  margin-top: 0.2rem;
+  color: #40516d;
 }
