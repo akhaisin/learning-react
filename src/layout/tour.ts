@@ -28,7 +28,7 @@ export function startTour(navigate: (path: string) => void): void {
 				popover: {
 					title: 'Exercise list',
 					description:
-						'Browse exercises targeting specific React concepts: hooks, state, effects, composition, and more. Work through them in order or jump to any topic.',
+						'Browse exercises targeting specific React concepts: hooks, state, effects, composition, and more. Open any exercise, edit the files directly, and use the built-in tests to check your progress.',
 					side: 'right',
 					align: 'start',
 				},
@@ -47,16 +47,26 @@ export function startTour(navigate: (path: string) => void): void {
 				popover: {
 					title: 'Tracking progress',
 					description:
-						'Exercises marked <strong style="color:#7ab87a">✓</strong> are ones you have worked through. Set <code>done: true</code> in <code>src/exercises.ts</code> — the single registry where all exercises are defined and tracked.',
+						'Exercises marked <strong style="color:#7ab87a">✓</strong> are the ones whose tests currently pass. The completion flag is updated automatically when you run tests, and it is cleared again if you edit the code, fail a test, or hit a compile error.',
 					side: 'right',
 				},
 			},
 			{
 				element: '#tour-source-tabs',
 				popover: {
-					title: 'Solution source files',
+					title: 'Editable exercise files',
 					description:
-						"Use the left-side tabs to browse the exercise's source files while keeping the result visible at the same time.",
+						"The left-side tabs are fully editable. Update the component, utilities, styles, and any <code>*.test.ts</code> files while keeping the result visible at the same time.",
+					side: 'bottom',
+					align: 'start',
+				},
+			},
+			{
+				element: '#tour-source-tabs',
+				popover: {
+					title: 'Built-in tests',
+					description:
+						'Test files can import a small browser-safe adapter from <code>../../test/vitest-adapter</code>. It intentionally supports a limited API that mimics Vitest rather than the full library.<ul><li><code>describe</code>, <code>it</code>, <code>expect</code>, <code>beforeEach</code></li><li><code>render</code>, <code>renderHook</code>, <code>screen</code></li><li><code>fireEvent</code>, <code>act</code></li></ul>',
 					side: 'bottom',
 					align: 'start',
 				},
@@ -64,8 +74,8 @@ export function startTour(navigate: (path: string) => void): void {
 			{
 				element: '#tour-preview-panel',
 				popover: {
-					title: 'Preview panel',
-					description: 'The right-side preview panel renders the exercise live in the browser as you read the source.',
+					title: 'Preview and feedback',
+					description: 'The right-side preview panel renders the exercise live in the browser as you edit. Use the test badge above the editor to run checks and inspect the detailed test results drawer.',
 					side: 'left',
 					align: 'start',
 				},
