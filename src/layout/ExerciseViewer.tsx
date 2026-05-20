@@ -259,36 +259,30 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
           }).code;
           // Strip native Vitest block to avoid top-level await and import.meta syntax errors in browser sandboxes
           transpiled = transpiled.replace(/if\s*\(\s*typeof\s+import\.meta\.env\s*!==\s*"undefined"\s*&&\s*import\.meta\.env\.VITEST\s*\)[\s\S]*$/, "");
-          transpiled += "\nexports.default = runTests;\n";
 
-          const testModule = { exports: {} as any };
-          const localRequire = (reqPath: string) => {
-            const normalized = reqPath.replace(/^((\.\.\/)|(\.\/))+/, "");
+          const results = runTestSuite(() => {
+            const testModule = { exports: {} as any };
+            const localRequire = (reqPath: string) => {
+              const normalized = reqPath.replace(/^((\.\.\/)|(\.\/))+/, "");
 
-            if (/test\/vitest-adapter(?:\.[a-z]+)?$/i.test(normalized)) {
-			  return vitestAdapter;
-			}
+              if (/test\/vitest-adapter(?:\.[a-z]+)?$/i.test(normalized)) {
+                return vitestAdapter;
+              }
 
-            const matchedKey = Object.keys(modules).find(
-              (k) => k.replace(/\.[a-zA-Z0-9]+$/, "").toLowerCase() === normalized.toLowerCase()
-            );
-            if (matchedKey) {
-              return modules[matchedKey];
-            }
+              const matchedKey = Object.keys(modules).find(
+                (k) => k.replace(/\.[a-zA-Z0-9]+$/, "").toLowerCase() === normalized.toLowerCase()
+              );
+              if (matchedKey) {
+                return modules[matchedKey];
+              }
 
-            if (reqPath === "react") return React;
-            throw new Error(`Cannot require "${reqPath}" inside test suite`);
-          };
+              if (reqPath === "react") return React;
+              throw new Error(`Cannot require "${reqPath}" inside test suite`);
+            };
 
-          const runFn = new Function("exports", "require", "module", "React", transpiled);
-          runFn(testModule.exports, localRequire, testModule, React);
-
-          const runTestsFn = testModule.exports.runTests || testModule.exports.default;
-          if (typeof runTestsFn !== "function") {
-            throw new Error("Test file must export a runTests function.");
-          }
-
-          const results = runTestSuite(runTestsFn, comp, tempContainer);
+            const runFn = new Function("exports", "require", "module", "React", transpiled);
+            runFn(testModule.exports, localRequire, testModule, React);
+          }, comp, tempContainer);
           // Distinguish test suites by prefixing them with the test file name
           allResults.push(...results.map(suite => ({
             ...suite,

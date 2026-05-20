@@ -179,7 +179,7 @@ let activeSuite: TestSuiteResult | null = null;
 const suites: TestSuiteResult[] = [];
 
 export function runTestSuite(
-  runTestsFn: (helpers?: VitestAdapterHelpers) => void,
+  registerTests: () => void,
   component: React.ComponentType,
   container: HTMLElement
 ): TestSuiteResult[] {
@@ -332,7 +332,7 @@ export function runTestSuite(
   setVitestAdapterContext(helpers);
 
   try {
-    runTestsFn(helpers);
+    registerTests();
   } catch (err: any) {
     if (activeSuite) {
       (activeSuite as TestSuiteResult).cases.push({

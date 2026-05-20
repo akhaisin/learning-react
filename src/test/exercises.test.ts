@@ -14,48 +14,39 @@ const testModules = import.meta.glob([
   "../pages/**/Component.test.tsx",
   "../pages/**/utils.test.ts",
   "../pages/**/utils.test.tsx"
-], { eager: true }) as Record<string, any>;
+]) as Record<string, () => Promise<any>>;
 
 const componentModules = import.meta.glob("../pages/**/Component.tsx", { eager: true }) as Record<string, any>;
 
-// Iterate through each discovered test file
-for (const [testPath, testModule] of Object.entries(testModules)) {
-  const runTests = testModule.default || testModule.runTests;
-  if (typeof runTests === "function") {
-    // Resolve the active exercise folder path
-    const folderPath = testPath.substring(0, testPath.lastIndexOf("/"));
-    
-    // Pair with the corresponding Component.tsx in the same folder
-    const componentPath = `${folderPath}/Component.tsx`;
-    const componentModule = componentModules[componentPath];
-    const Component = componentModule?.default;
+for (const [testPath, loadTestModule] of Object.entries(testModules)) {
+  const folderPath = testPath.substring(0, testPath.lastIndexOf("/"));
 
-    const exerciseLabel = folderPath.replace("../pages/", "");
-    const testFilename = testPath.substring(testPath.lastIndexOf("/") + 1);
-    const helpers: VitestAdapterHelpers = {
-      describe,
-      it,
-      expect: buildExpect(expect),
-      render: (element?: React.ReactElement) => {
-        if (element) return render(element);
-        if (Component) return render(React.createElement(Component));
-        throw new Error("render() requires an element argument when no Component is available");
-      },
-      renderHook,
-      fireEvent,
-      screen,
-      act,
-      beforeEach,
-    };
+  // Pair with the corresponding Component.tsx in the same folder
+  const componentPath = `${folderPath}/Component.tsx`;
+  const componentModule = componentModules[componentPath];
+  const Component = componentModule?.default;
 
-    describe(`Exercise: ${exerciseLabel} > ${testFilename}`, () => {
-      setVitestAdapterContext(helpers);
-      try {
-        runTests(helpers);
-      } finally {
-        clearVitestAdapterContext();
-      }
-    });
+  const helpers: VitestAdapterHelpers = {
+    describe,
+    it,
+    expect: buildExpect(expect),
+    render: (element?: React.ReactElement) => {
+      if (element) return render(element);
+      if (Component) return render(React.createElement(Component));
+      throw new Error("render() requires an element argument when no Component is available");
+    },
+    renderHook,
+    fireEvent,
+    screen,
+    act,
+    beforeEach,
+  };
+
+  setVitestAdapterContext(helpers);
+  try {
+    await loadTestModule();
+  } finally {
+    clearVitestAdapterContext();
   }
 }
 
