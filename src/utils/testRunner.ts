@@ -59,11 +59,21 @@ const fireEvent = {
     eventInit: { target: { value: string } }
   ) => {
     flushSync(() => {
-      element.value = eventInit.target.value;
-      const changeEvent = new Event("change", { bubbles: true });
-      element.dispatchEvent(changeEvent);
+      const prototype = Object.getPrototypeOf(element) as {
+        constructor?: { prototype?: object };
+      };
+      const valueSetter = Object.getOwnPropertyDescriptor(prototype, "value")?.set;
+
+      if (valueSetter) {
+        valueSetter.call(element, eventInit.target.value);
+      } else {
+        element.value = eventInit.target.value;
+      }
+
       const inputEvent = new Event("input", { bubbles: true });
       element.dispatchEvent(inputEvent);
+      const changeEvent = new Event("change", { bubbles: true });
+      element.dispatchEvent(changeEvent);
     });
   },
   keyDown: (element: HTMLElement, init: KeyboardEventInit) => {

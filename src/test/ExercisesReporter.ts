@@ -13,18 +13,53 @@ export default class ExercisesReporter extends DefaultReporter {
       return
     }
 
+    const moduleState = testModule.state()
+    if (moduleState === 'queued' || moduleState === 'pending') {
+      return
+    }
+
     for (const child of testModule.children) {
       if (child.type !== 'suite') continue
-      const m = child.name.match(/^Exercise: (.+?) > (.+)$/)
-      if (!m) continue
-      const displayPath = `src/pages/${m[1]}/${m[2]}`
+
+      const tests = collectTests(child)
+      if (tests.length === 0) continue
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const tests = Array.from(child.children.allTests()) as any[]
       const nFail = tests.filter(t => t.result().state === 'failed').length
-      const dur = Math.round(child.task.result?.duration ?? 0)
+      const dur = Math.round(
+        tests.reduce((sum, test) => sum + (test.result().duration ?? 0), 0)
+      )
+      const displayName = getDisplayName(child.name)
       const icon = nFail ? R('✗') : G('✓')
       const durStr = dur > 0 ? G(` ${dur}`) + D('ms') : ''
-      this.log(` ${icon} ${displayPath} ${D(`(${tests.length} tests)`)}${durStr}`)
+      this.log(` ${icon} ${displayName} ${D(`(${tests.length} tests)`)}${durStr}`)
     }
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function collectTests(task: any): any[] {
+  const tests = []
+
+  for (const child of task.children ?? []) {
+    if (child.type === 'test') {
+      tests.push(child)
+      continue
+    }
+
+    if (child.type === 'suite') {
+      tests.push(...collectTests(child))
+    }
+  }
+
+  return tests
+}
+
+function getDisplayName(name: string) {
+  const fileName = name.split(' > ')[0]
+  if (/^src\/pages\/.+\/(Component|utils)\.test\.tsx?$/.test(fileName)) {
+    return fileName
+  }
+
+  return name
 }

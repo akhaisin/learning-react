@@ -20,6 +20,7 @@ const componentModules = import.meta.glob("../pages/**/Component.tsx", { eager: 
 
 for (const [testPath, loadTestModule] of Object.entries(testModules)) {
   const folderPath = testPath.substring(0, testPath.lastIndexOf("/"));
+  const displayTestPath = testPath.replace(/^\.\.\//, "src/");
 
   // Pair with the corresponding Component.tsx in the same folder
   const componentPath = `${folderPath}/Component.tsx`;
@@ -40,6 +41,7 @@ for (const [testPath, loadTestModule] of Object.entries(testModules)) {
     screen,
     act,
     beforeEach,
+    nextDescribePrefix: displayTestPath,
   };
 
   setVitestAdapterContext(helpers);

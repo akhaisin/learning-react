@@ -48,6 +48,7 @@ export type VitestAdapterHelpers = {
 	screen: ScreenHelpers;
 	act: (fn: () => void) => void;
 	beforeEach: (fn: () => void) => void;
+	nextDescribePrefix?: string;
 };
 
 let currentHelpers: VitestAdapterHelpers | null = null;
@@ -84,7 +85,11 @@ export function clearVitestAdapterContext() {
 
 export function describe(name: string, fn: () => void) {
 	const helpers = getHelpers();
-	return helpers.describe(name, withHelpers(helpers, fn));
+	const prefixedName = helpers.nextDescribePrefix
+		? `${helpers.nextDescribePrefix} > ${name}`
+		: name;
+	helpers.nextDescribePrefix = undefined;
+	return helpers.describe(prefixedName, withHelpers(helpers, fn));
 }
 
 export function it(name: string, fn: () => void) {
