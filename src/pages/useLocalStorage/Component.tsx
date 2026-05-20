@@ -1,10 +1,10 @@
-import useLocalStorage from './utils'
-import styles from './Component.module.css'
+import useLocalStorage from './utils';
+import styles from './Component.module.css';
 
 function UseLocalStorage() {
-  const [input1, setInput1] = useLocalStorage("learning-react.v1.useLocalStorage.input1", "")
-  const [input2, setInput2] = useLocalStorage("learning-react.v1.useLocalStorage.input2", "")
-  const [input3, setInput3] = useLocalStorage("learning-react.v1.useLocalStorage.input3", "")
+  const [input1, setInput1] = useLocalStorage("learning-react.v1.useLocalStorage.input1", "");
+  const [input2, setInput2] = useLocalStorage("learning-react.v1.useLocalStorage.input2", "");
+  const [input3, setInput3] = useLocalStorage("learning-react.v1.useLocalStorage.input3", "");
 
   return (
     <div className={styles.page}>

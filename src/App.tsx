@@ -1,33 +1,33 @@
-import type { ComponentType } from 'react';
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
-import AppLayout, { type AppPage, type AppVariation } from './layout/AppLayout';
-import ExerciseViewer from './layout/ExerciseViewer';
-import SandboxEditor from './layout/SandboxEditor';
-import { exercises } from './exercises';
+import type { ComponentType } from "react";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import AppLayout, { type AppPage, type AppVariation } from "./layout/AppLayout";
+import ExerciseViewer from "./layout/ExerciseViewer";
+import SandboxEditor from "./layout/SandboxEditor";
+import { exercises } from "./exercises";
 
 type PageModule = {
   default?: ComponentType;
 };
 
 // Matches both single-impl exercises (depth 4) and variation exercises (depth 5)
-const pageModules = import.meta.glob<PageModule>('./pages/**/*Page.tsx', {
+const pageModules = import.meta.glob<PageModule>("./pages/**/*Page.tsx", {
   eager: true,
 });
 
-const rawSources = import.meta.glob('./pages/**/*', {
-  query: '?raw',
-  import: 'default',
+const rawSources = import.meta.glob("./pages/**/*", {
+  query: "?raw",
+  import: "default",
   eager: true,
 }) as Record<string, string>;
 
 type SingleExerciseData = {
-  type: 'single';
+  type: "single";
   module: PageModule;
   sourceFiles: Record<string, string>;
 };
 
 type VariationExerciseData = {
-  type: 'variations';
+  type: "variations";
   byVariationId: Record<string, { module: PageModule; sourceFiles: Record<string, string> }>;
 };
 
@@ -36,17 +36,17 @@ type ExerciseData = SingleExerciseData | VariationExerciseData;
 const exerciseData: Record<string, ExerciseData> = {};
 
 for (const [path, module] of Object.entries(pageModules)) {
-  const parts = path.split('/');
+  const parts = path.split("/");
   if (parts.length === 4) {
     // ./pages/{exerciseId}/{File}Page.tsx
     const exerciseId = parts[2];
-    exerciseData[exerciseId] = { type: 'single', module, sourceFiles: {} };
+    exerciseData[exerciseId] = { type: "single", module, sourceFiles: {} };
   } else if (parts.length === 5) {
     // ./pages/{exerciseId}/{variationId}/{File}Page.tsx
     const exerciseId = parts[2];
     const variationId = parts[3];
-    if (!exerciseData[exerciseId] || exerciseData[exerciseId].type !== 'variations') {
-      exerciseData[exerciseId] = { type: 'variations', byVariationId: {} };
+    if (!exerciseData[exerciseId] || exerciseData[exerciseId].type !== "variations") {
+      exerciseData[exerciseId] = { type: "variations", byVariationId: {} };
     }
     const entry = exerciseData[exerciseId] as VariationExerciseData;
     entry.byVariationId[variationId] = { module, sourceFiles: {} };
@@ -54,12 +54,12 @@ for (const [path, module] of Object.entries(pageModules)) {
 }
 
 for (const [path, content] of Object.entries(rawSources)) {
-  const parts = path.split('/');
+  const parts = path.split("/");
   if (parts.length === 4) {
     const exerciseId = parts[2];
     const filename = parts[3];
     const entry = exerciseData[exerciseId];
-    if (entry?.type === 'single') {
+    if (entry?.type === "single") {
       entry.sourceFiles[filename] = content;
     }
   } else if (parts.length === 5) {
@@ -67,7 +67,7 @@ for (const [path, content] of Object.entries(rawSources)) {
     const variationId = parts[3];
     const filename = parts[4];
     const entry = exerciseData[exerciseId];
-    if (entry?.type === 'variations') {
+    if (entry?.type === "variations") {
       const varEntry = entry.byVariationId[variationId];
       if (varEntry) {
         varEntry.sourceFiles[filename] = content;
@@ -91,12 +91,19 @@ const pages: AppPage[] = exercises.flatMap((exercise, index): AppPage[] => {
     tags: exercise.tags,
   };
 
-  if (data.type === 'single') {
+  if (data.type === "single") {
     if (!data.module.default) {
       console.warn(`[exercises] No default export in Page.tsx for id "${exercise.id}".`);
       return [];
     }
-    return [{ ...base, done: exercise.done, Component: data.module.default, sourceFiles: data.sourceFiles }];
+    return [
+      {
+        ...base,
+        solution: exercise.solution,
+        Component: data.module.default,
+        sourceFiles: data.sourceFiles,
+      },
+    ];
   }
 
   // variation exercise — build AppVariation list from registry order
@@ -111,14 +118,22 @@ const pages: AppPage[] = exercises.flatMap((exercise, index): AppPage[] => {
       console.warn(`[exercises] No *Page.tsx found for variation "${exercise.id}/${v.id}".`);
       return [];
     }
-    return [{ id: v.id, label: v.label, done: v.done, Component: varData.module.default, sourceFiles: varData.sourceFiles }];
+    return [
+      {
+        id: v.id,
+        label: v.label,
+        solution: v.solution,
+        Component: varData.module.default,
+        sourceFiles: varData.sourceFiles,
+      },
+    ];
   });
 
-  const done = variations.every((v) => v.done);
-  return [{ ...base, done, variations }];
+  const solution = variations.every((v) => v.solution);
+  return [{ ...base, solution, variations }];
 });
 
-const DEFAULT_PAGE_ID_KEY = 'DEFAULT_PAGE_ID';
+const DEFAULT_PAGE_ID_KEY = "DEFAULT_PAGE_ID";
 
 const resolveDefaultPageId = (fallbackPageId: string) => {
   const storedPageId = localStorage.getItem(DEFAULT_PAGE_ID_KEY);
@@ -155,7 +170,10 @@ function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<AppLayout pages={pages} onSelectedPageChange={handleSelectedPageChange} />}>
+        <Route
+          path="/"
+          element={<AppLayout pages={pages} onSelectedPageChange={handleSelectedPageChange} />}
+        >
           <Route index element={<Navigate to={defaultPageId} replace />} />
           {pages.map((page) => {
             if (page.variations) {

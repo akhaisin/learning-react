@@ -13,6 +13,7 @@ function NestedCheckboxes({ parent, children }: NestedCheckboxesProps) {
   const [checkedChildren, setCheckedChildren] = useState<boolean[]>(() => children.map(() => false));
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCheckedChildren(children.map(() => false));
   }, [children]);
 

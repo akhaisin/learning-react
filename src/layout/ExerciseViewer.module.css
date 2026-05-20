@@ -14,16 +14,25 @@
 	border-radius: 20px;
 	background: rgba(255, 250, 241, 0.72);
 	box-shadow: 0 12px 28px rgba(108, 83, 35, 0.06);
+	position: relative;
 }
 
 .tabBar {
 	display: flex;
-	gap: 0.25rem;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
 	flex-shrink: 0;
 	flex-wrap: wrap;
 	padding-bottom: 0.75rem;
 	border-bottom: 1px solid #d8cfbf;
 	margin-bottom: 0.75rem;
+}
+
+.tabsList {
+	display: flex;
+	gap: 0.25rem;
+	flex-wrap: wrap;
 }
 
 .tab {
@@ -55,10 +64,80 @@
 	font-weight: 500;
 }
 
+.actionBar {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.actionBtn {
+	padding: 0.35rem 0.75rem;
+	border: 1px solid #d8cfbf;
+	border-radius: 8px;
+	background: #fffdf8;
+	color: #705b35;
+	font: inherit;
+	font-size: 0.75rem;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.actionBtn:hover {
+	border-color: #8a6f3e;
+	background: #f5eedf;
+	color: #3b2f14;
+}
+
+.testBadgeBtn {
+	padding: 0.35rem 0.85rem;
+	border: 1px solid #d8cfbf;
+	border-radius: 8px;
+	background: #fffdf8;
+	color: #5c6b73;
+	font: inherit;
+	font-weight: 500;
+	font-size: 0.75rem;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+}
+
+.testBadgeBtn:hover {
+	border-color: #5c6b73;
+	background: #f0f4f8;
+}
+
+.testPassed {
+	background: #eef8ee;
+	border-color: #7ab87a;
+	color: #2b6c2b;
+}
+
+.testPassed:hover {
+	background: #e2f3e2;
+	border-color: #5ea35e;
+}
+
+.testFailed {
+	background: #fff0f0;
+	border-color: #e58f8f;
+	color: #b82b2b;
+}
+
+.testFailed:hover {
+	background: #ffe3e3;
+	border-color: #d66f6f;
+}
+
 .content {
 	flex: 1;
 	min-height: 0;
 	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
 }
 
 .previewPanel {
@@ -104,6 +183,7 @@
 	display: grid;
 	place-items: center;
 	min-height: 100%;
+	width: 100%;
 }
 
 .emptyState {
@@ -115,6 +195,229 @@
 	border-radius: 12px;
 	color: #8a7a60;
 	background: rgba(255, 253, 248, 0.8);
+}
+
+.errorContainer {
+	background: #fff5f5;
+	border: 1px solid #ffcccc;
+	border-radius: 14px;
+	padding: 1.5rem;
+	color: #c53030;
+	width: 100%;
+	max-width: 600px;
+	box-shadow: 0 10px 25px rgba(197, 48, 48, 0.08);
+	box-sizing: border-box;
+}
+
+.errorContainer h3 {
+	margin-top: 0;
+	margin-bottom: 0.75rem;
+	font-size: 1.1rem;
+	color: #9b2c2c;
+}
+
+.errorContainer pre {
+	margin: 0;
+	white-space: pre-wrap;
+	word-break: break-word;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 0.82rem;
+	line-height: 1.5;
+}
+
+/* Test results drawer */
+.testDrawer {
+	position: absolute;
+	top: 50%;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #fffdf8;
+	border-top: 1px solid #d8cfbf;
+	z-index: 50;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	box-shadow: 0 -8px 24px rgba(108, 83, 35, 0.08);
+	animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+	from { transform: translateY(100%); }
+	to { transform: translateY(0); }
+}
+
+.testDrawerHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.75rem 1rem;
+	background: #f8f3e8;
+	border-bottom: 1px solid #d8cfbf;
+	flex-shrink: 0;
+}
+
+.testDrawerHeader h3 {
+	margin: 0;
+	font-size: 0.95rem;
+	color: #3b2f14;
+}
+
+.drawerControls {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.autoRunLabel {
+	font-size: 0.75rem;
+	color: #705b35;
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	cursor: pointer;
+}
+
+.drawerCloseBtn {
+	background: transparent;
+	border: none;
+	font-size: 1.25rem;
+	color: #8a7a60;
+	cursor: pointer;
+	line-height: 1;
+	padding: 0 0.25rem;
+	transition: color 0.15s ease;
+}
+
+.drawerCloseBtn:hover {
+	color: #3b2f14;
+}
+
+.testDrawerBody {
+	min-height: 0;
+	overflow-y: auto;
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.noTestsText {
+	color: #8a7a60;
+	font-size: 0.85rem;
+	text-align: center;
+	padding: 2rem;
+}
+
+.testSuite {
+	border: 1px solid #e8e2d5;
+	border-radius: 10px;
+	overflow: hidden;
+	flex-shrink: 0;
+	background: rgba(255, 252, 245, 0.5);
+}
+
+.suiteTitle {
+	margin: 0;
+	padding: 0.5rem 0.75rem;
+	background: #fdfaf4;
+	border-bottom: 1px solid #e8e2d5;
+	font-size: 0.82rem;
+	color: #5c4a28;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.suiteName {
+	font-weight: 500;
+}
+
+.suiteCount {
+	font-size: 0.72rem;
+	font-weight: 600;
+	padding: 0.1rem 0.45rem;
+	border-radius: 999px;
+	background: #e8e2d5;
+	color: #705b35;
+	flex-shrink: 0;
+}
+
+.suiteCountPass {
+	background: #d4edda;
+	color: #1e6b2e;
+}
+
+.suiteCountFail {
+	background: #fde8e8;
+	color: #9b2c2c;
+}
+
+.childSuites {
+	padding: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	background: rgba(248, 244, 236, 0.4);
+}
+
+.caseList {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.testCase {
+	padding: 0.6rem 0.75rem;
+	border-bottom: 1px solid #f2ede2;
+	display: flex;
+	align-items: flex-start;
+	gap: 0.6rem;
+	font-size: 0.8rem;
+}
+
+.testCase:last-child {
+	border-bottom: none;
+}
+
+.caseIcon {
+	font-size: 0.85rem;
+	flex-shrink: 0;
+	padding-top: 0.05rem;
+}
+
+.iconPass {
+	color: #2b6c2b;
+}
+
+.iconFail {
+	color: #b82b2b;
+}
+
+.caseDetails {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.caseName {
+	color: #2d3748;
+}
+
+.caseError {
+	margin: 0;
+	background: #fff5f5;
+	border: 1px solid #ffd6d6;
+	border-radius: 6px;
+	padding: 0.5rem 0.75rem;
+	color: #c53030;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 0.75rem;
+	white-space: pre-wrap;
+	word-break: break-all;
 }
 
 @media (max-width: 900px) {
@@ -129,25 +432,4 @@
 	.previewPanel {
 		min-height: 20rem;
 	}
-}
-
-.codeBlock {
-	margin: 0;
-	padding: 1.25rem 1.5rem;
-	border-radius: 12px;
-	font-size: 0.82rem;
-	line-height: 1.65;
-	tab-size: 2;
-	min-height: 100%;
-	box-sizing: border-box;
-}
-
-.lineNumber {
-	display: inline-block;
-	width: 2.5rem;
-	text-align: right;
-	margin-right: 1.25rem;
-	opacity: 0.35;
-	user-select: none;
-	font-variant-numeric: tabular-nums;
 }

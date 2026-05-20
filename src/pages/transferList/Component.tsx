@@ -25,6 +25,7 @@ function TransferList({ left, right }: TransferListProps) {
   const [selectedRightIds, setSelectedRightIds] = useState<string[]>([]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLeftItems(toItems(left, 'left'));
     setRightItems(toItems(right, 'right'));
     setSelectedLeftIds([]);
