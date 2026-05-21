@@ -9,7 +9,8 @@ Various React exercises which fit into 1h maximum interview session.
   - `pnpm dev`
   - `pnpm build`
   - `pnpm lint`
-  - `pnpm test:run`
+  - `pnpm test`
+  - `pnpm test --run`
 
 ## Adding Exercises & Conventions
 

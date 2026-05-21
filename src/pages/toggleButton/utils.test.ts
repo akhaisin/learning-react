@@ -4,20 +4,34 @@ import { describe, it, expect, renderHook, act } from '../../test/vitest-adapter
 describe('useToggle', () => {
   it('defaults to false', () => {
     const { result } = renderHook(() => useToggle());
-    expect(result.current[0]).toBe(false);
+
+    const [value] = result.current;
+
+    expect(value).toBe(false);
   });
 
   it('respects initialValue = true', () => {
     const { result } = renderHook(() => useToggle(true));
-    expect(result.current[0]).toBe(true);
+
+    const [value] = result.current;
+
+    expect(value).toBe(true);
   });
 
   it('toggles state on each call', () => {
     const { result } = renderHook(() => useToggle());
-    expect(result.current[0]).toBe(false);
-    act(() => result.current[1]());
-    expect(result.current[0]).toBe(true);
-    act(() => result.current[1]());
-    expect(result.current[0]).toBe(false);
+
+    const [initialValue, toggle] = result.current;
+    expect(initialValue).toBe(false);
+
+    act(() => toggle());
+
+    const [valueAfterFirstToggle, toggleAgain] = result.current;
+    expect(valueAfterFirstToggle).toBe(true);
+
+    act(() => toggleAgain());
+
+    const [valueAfterSecondToggle] = result.current;
+    expect(valueAfterSecondToggle).toBe(false);
   });
 });
