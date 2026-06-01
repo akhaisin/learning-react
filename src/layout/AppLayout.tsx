@@ -49,8 +49,13 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
   );
   const listRef = useRef<HTMLDivElement>(null);
   const [helpSeen, setHelpSeen] = useLocalStorage("learning-react.v1.helpSeen", false);
+  const [theme, setTheme] = useLocalStorage<"light" | "dark">("learning-react.v1.theme", "light");
   const firstVariationId = pages.find((p) => p.variations)?.id;
   const firstDoneId = pages.find((p) => p.solution)?.id;
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   // React state to force re-render when local storage completion status changes
   const [, setCompletionNonce] = useState(0);
@@ -258,11 +263,11 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
             left: "1rem",
             bottom: "1rem",
             "--mefly-nav-trigger-size": "2.15rem",
-            "--mefly-nav-trigger-bg": "rgba(255, 252, 245, 0.92)",
-            "--mefly-nav-trigger-bg-hover": "rgba(240, 236, 226, 0.97)",
-            "--mefly-nav-trigger-color": "#403929",
-            "--mefly-nav-trigger-border": "1px solid #d8cfbf",
-            "--mefly-nav-trigger-shadow": "0 8px 20px rgba(31, 41, 51, 0.12)",
+            "--mefly-nav-trigger-bg": "var(--color-bg-subtle)",
+            "--mefly-nav-trigger-bg-hover": "var(--color-bg)",
+            "--mefly-nav-trigger-color": "var(--color-text)",
+            "--mefly-nav-trigger-border": "1px solid var(--color-border)",
+            "--mefly-nav-trigger-shadow": "0 8px 20px var(--color-shadow)",
             "--mefly-nav-trigger-hover-transform": "translateY(-1px)",
           } as React.CSSProperties
         }
@@ -297,6 +302,23 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
         </svg>
+      </button>
+
+      <button
+        className={styles["theme-btn"]}
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+        title={theme === "dark" ? "Light theme" : "Dark theme"}
+      >
+        {theme === "dark" ? (
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1zm10-6a1 1 0 0 1-1 1h-2a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1zM5 12a1 1 0 0 1-1 1H2a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1zm14.07-7.07a1 1 0 0 1 0 1.41l-1.42 1.42a1 1 0 1 1-1.41-1.41l1.41-1.42a1 1 0 0 1 1.42 0zM7.76 16.24a1 1 0 0 1 0 1.41l-1.42 1.42a1 1 0 1 1-1.41-1.41l1.41-1.42a1 1 0 0 1 1.42 0zm11.31 2.83a1 1 0 0 1-1.42 0l-1.41-1.42a1 1 0 1 1 1.41-1.41l1.42 1.41a1 1 0 0 1 0 1.42zM7.76 7.76a1 1 0 0 1-1.42 0L4.93 6.34a1 1 0 0 1 1.41-1.41l1.42 1.41a1 1 0 0 1 0 1.42z" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M21.64 13a1 1 0 0 0-1.05-.14 8.05 8.05 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05z" />
+          </svg>
+        )}
       </button>
     </main>
   );

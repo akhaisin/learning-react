@@ -10,10 +10,10 @@
 	min-height: 0;
 	overflow: hidden;
 	padding: 1rem;
-	border: 1px solid #d8cfbf;
+	border: 1px solid var(--color-border);
 	border-radius: 20px;
-	background: rgba(255, 250, 241, 0.72);
-	box-shadow: 0 12px 28px rgba(108, 83, 35, 0.06);
+	background: var(--color-bg-subtle);
+	box-shadow: 0 12px 28px var(--color-shadow);
 	position: relative;
 }
 
@@ -25,7 +25,7 @@
 	flex-shrink: 0;
 	flex-wrap: wrap;
 	padding-bottom: 0.75rem;
-	border-bottom: 1px solid #d8cfbf;
+	border-bottom: 1px solid var(--color-border);
 	margin-bottom: 0.75rem;
 }
 
@@ -37,10 +37,10 @@
 
 .tab {
 	padding: 0.35rem 0.85rem;
-	border: 1px solid #d8cfbf;
+	border: 1px solid var(--color-border);
 	border-radius: 8px;
-	background: #fffdf8;
-	color: #8a6f3e;
+	background: var(--color-bg);
+	color: var(--color-text-muted);
 	font: inherit;
 	font-size: 0.8rem;
 	cursor: pointer;
@@ -48,19 +48,19 @@
 }
 
 .tab:hover {
-	border-color: #b89355;
-	background: #f8f0e0;
+	border-color: var(--color-accent);
+	background: var(--color-bg-elevated);
 }
 
 .tab:focus-visible {
-	outline: 2px solid #8a6f3e;
+	outline: 2px solid var(--color-accent);
 	outline-offset: 2px;
 }
 
 .tabActive {
-	background: #f3e4c8;
-	border-color: #8a6f3e;
-	color: #5c4a28;
+	background: var(--color-bg-active);
+	border-color: var(--color-accent);
+	color: var(--color-text);
 	font-weight: 500;
 }
 
@@ -72,10 +72,10 @@
 
 .actionBtn {
 	padding: 0.35rem 0.75rem;
-	border: 1px solid #d8cfbf;
+	border: 1px solid var(--color-border);
 	border-radius: 8px;
-	background: #fffdf8;
-	color: #705b35;
+	background: var(--color-bg);
+	color: var(--color-text-muted);
 	font: inherit;
 	font-size: 0.75rem;
 	cursor: pointer;
@@ -83,17 +83,17 @@
 }
 
 .actionBtn:hover {
-	border-color: #8a6f3e;
-	background: #f5eedf;
-	color: #3b2f14;
+	border-color: var(--color-accent);
+	background: var(--color-bg-elevated);
+	color: var(--color-text);
 }
 
 .testBadgeBtn {
 	padding: 0.35rem 0.85rem;
-	border: 1px solid #d8cfbf;
+	border: 1px solid var(--color-border);
 	border-radius: 8px;
-	background: #fffdf8;
-	color: #5c6b73;
+	background: var(--color-bg);
+	color: var(--color-text-muted);
 	font: inherit;
 	font-weight: 500;
 	font-size: 0.75rem;
@@ -105,30 +105,30 @@
 }
 
 .testBadgeBtn:hover {
-	border-color: #5c6b73;
-	background: #f0f4f8;
+	border-color: var(--color-accent);
+	background: var(--color-bg-elevated);
 }
 
 .testPassed {
-	background: #eef8ee;
-	border-color: #7ab87a;
-	color: #2b6c2b;
+	background: var(--color-success-bg);
+	border-color: var(--color-success-border);
+	color: var(--color-success);
 }
 
 .testPassed:hover {
-	background: #e2f3e2;
-	border-color: #5ea35e;
+	background: var(--color-success-bg);
+	border-color: var(--color-success);
 }
 
 .testFailed {
-	background: #fff0f0;
-	border-color: #e58f8f;
-	color: #b82b2b;
+	background: var(--color-danger-bg);
+	border-color: var(--color-danger-border);
+	color: var(--color-danger);
 }
 
 .testFailed:hover {
-	background: #ffe3e3;
-	border-color: #d66f6f;
+	background: var(--color-danger-bg);
+	border-color: var(--color-danger);
 }
 
 .content {
@@ -146,10 +146,10 @@
 	min-height: 0;
 	overflow: auto;
 	padding: 1rem;
-	border: 1px solid #d8cfbf;
+	border: 1px solid var(--color-border);
 	border-radius: 20px;
-	background: rgba(255, 250, 241, 0.72);
-	box-shadow: 0 12px 28px rgba(108, 83, 35, 0.06);
+	background: var(--color-bg-subtle);
+	box-shadow: 0 12px 28px var(--color-shadow);
 }
 
 .resizeHandle {
@@ -168,7 +168,7 @@
 	inset: 0;
 	left: 2px;
 	width: 1px;
-	background: #d8cfbf;
+	background: var(--color-border);
 	transition: background-color 0.15s ease, left 0.15s ease, width 0.15s ease;
 }
 
@@ -176,7 +176,7 @@
 .resizeHandle[data-separator-state="drag"]::after {
 	left: 1px;
 	width: 3px;
-	background: #8a6f3e;
+	background: var(--color-accent);
 }
 
 .preview {
@@ -191,21 +191,21 @@
 	place-items: center;
 	height: 100%;
 	min-height: 12rem;
-	border: 1px dashed #d8cfbf;
+	border: 1px dashed var(--color-border);
 	border-radius: 12px;
-	color: #8a7a60;
-	background: rgba(255, 253, 248, 0.8);
+	color: var(--color-text-muted);
+	background: var(--color-bg-subtle);
 }
 
 .errorContainer {
-	background: #fff5f5;
-	border: 1px solid #ffcccc;
+	background: var(--color-danger-bg);
+	border: 1px solid var(--color-danger-border);
 	border-radius: 14px;
 	padding: 1.5rem;
-	color: #c53030;
+	color: var(--color-danger);
 	width: 100%;
 	max-width: 600px;
-	box-shadow: 0 10px 25px rgba(197, 48, 48, 0.08);
+	box-shadow: 0 10px 25px var(--color-shadow);
 	box-sizing: border-box;
 }
 
@@ -213,14 +213,14 @@
 	margin-top: 0;
 	margin-bottom: 0.75rem;
 	font-size: 1.1rem;
-	color: #9b2c2c;
+	color: var(--color-danger);
 }
 
 .errorContainer pre {
 	margin: 0;
 	white-space: pre-wrap;
 	word-break: break-word;
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-family: var(--font-mono);
 	font-size: 0.82rem;
 	line-height: 1.5;
 }
@@ -232,13 +232,13 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: #fffdf8;
-	border-top: 1px solid #d8cfbf;
+	background: var(--color-bg);
+	border-top: 1px solid var(--color-border);
 	z-index: 50;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	box-shadow: 0 -8px 24px rgba(108, 83, 35, 0.08);
+	box-shadow: 0 -8px 24px var(--color-shadow);
 	animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -252,15 +252,15 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 0.75rem 1rem;
-	background: #f8f3e8;
-	border-bottom: 1px solid #d8cfbf;
+	background: var(--color-bg-elevated);
+	border-bottom: 1px solid var(--color-border);
 	flex-shrink: 0;
 }
 
 .testDrawerHeader h3 {
 	margin: 0;
 	font-size: 0.95rem;
-	color: #3b2f14;
+	color: var(--color-text);
 }
 
 .drawerControls {
@@ -271,7 +271,7 @@
 
 .autoRunLabel {
 	font-size: 0.75rem;
-	color: #705b35;
+	color: var(--color-text-muted);
 	display: flex;
 	align-items: center;
 	gap: 0.25rem;
@@ -282,7 +282,7 @@
 	background: transparent;
 	border: none;
 	font-size: 1.25rem;
-	color: #8a7a60;
+	color: var(--color-text-muted);
 	cursor: pointer;
 	line-height: 1;
 	padding: 0 0.25rem;
@@ -290,7 +290,7 @@
 }
 
 .drawerCloseBtn:hover {
-	color: #3b2f14;
+	color: var(--color-text);
 }
 
 .testDrawerBody {
@@ -303,27 +303,27 @@
 }
 
 .noTestsText {
-	color: #8a7a60;
+	color: var(--color-text-muted);
 	font-size: 0.85rem;
 	text-align: center;
 	padding: 2rem;
 }
 
 .testSuite {
-	border: 1px solid #e8e2d5;
+	border: 1px solid var(--color-border);
 	border-radius: 10px;
 	overflow: hidden;
 	flex-shrink: 0;
-	background: rgba(255, 252, 245, 0.5);
+	background: var(--color-bg-subtle);
 }
 
 .suiteTitle {
 	margin: 0;
 	padding: 0.5rem 0.75rem;
-	background: #fdfaf4;
-	border-bottom: 1px solid #e8e2d5;
+	background: var(--color-bg-elevated);
+	border-bottom: 1px solid var(--color-border);
 	font-size: 0.82rem;
-	color: #5c4a28;
+	color: var(--color-text);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -339,19 +339,19 @@
 	font-weight: 600;
 	padding: 0.1rem 0.45rem;
 	border-radius: 999px;
-	background: #e8e2d5;
-	color: #705b35;
+	background: var(--color-bg-active);
+	color: var(--color-text-muted);
 	flex-shrink: 0;
 }
 
 .suiteCountPass {
-	background: #d4edda;
-	color: #1e6b2e;
+	background: var(--color-success-bg);
+	color: var(--color-success);
 }
 
 .suiteCountFail {
-	background: #fde8e8;
-	color: #9b2c2c;
+	background: var(--color-danger-bg);
+	color: var(--color-danger);
 }
 
 .childSuites {
@@ -359,7 +359,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.4rem;
-	background: rgba(248, 244, 236, 0.4);
+	background: var(--color-bg-elevated);
 }
 
 .caseList {
@@ -370,7 +370,7 @@
 
 .testCase {
 	padding: 0.6rem 0.75rem;
-	border-bottom: 1px solid #f2ede2;
+	border-bottom: 1px solid var(--color-border-soft);
 	display: flex;
 	align-items: flex-start;
 	gap: 0.6rem;
@@ -388,11 +388,11 @@
 }
 
 .iconPass {
-	color: #2b6c2b;
+	color: var(--color-success);
 }
 
 .iconFail {
-	color: #b82b2b;
+	color: var(--color-danger);
 }
 
 .caseDetails {
@@ -404,17 +404,17 @@
 }
 
 .caseName {
-	color: #2d3748;
+	color: var(--color-text);
 }
 
 .caseError {
 	margin: 0;
-	background: #fff5f5;
-	border: 1px solid #ffd6d6;
+	background: var(--color-danger-bg);
+	border: 1px solid var(--color-danger-border);
 	border-radius: 6px;
 	padding: 0.5rem 0.75rem;
-	color: #c53030;
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	color: var(--color-danger);
+	font-family: var(--font-mono);
 	font-size: 0.75rem;
 	white-space: pre-wrap;
 	word-break: break-all;
