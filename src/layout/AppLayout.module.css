@@ -106,6 +106,16 @@
   background: var(--color-bg-active);
 }
 
+/* Nav content rendered inside the CollapsibleSidePanel body (which has no padding) */
+.nav-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 1.5rem;
+  background: var(--color-bg-subtle);
+}
+
 .page-list {
   display: flex;
   flex-direction: column;

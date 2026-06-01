@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState, type ComponentType } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useHostSync, MeflyNavReceiver } from "mefly-nav";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { startTour } from "./tour";
 import "mefly-nav/style.css";
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
+import CollapsibleSidePanel from "./CollapsibleSidePanel";
+import NavContent, { NavProvider, type NavContextValue } from "./NavContent";
 import styles from "./AppLayout.module.css";
 
 export type AppVariation = {
@@ -47,7 +49,6 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
   const lastExerciseId = useRef(
     pages[0]?.variations ? `${pages[0].id}/${pages[0].variations[0].id}` : pages[0]?.id ?? ""
   );
-  const listRef = useRef<HTMLDivElement>(null);
   const [helpSeen, setHelpSeen] = useLocalStorage("learning-react.v1.helpSeen", false);
   const [theme, setTheme] = useLocalStorage<"light" | "dark">("learning-react.v1.theme", "light");
   const firstVariationId = pages.find((p) => p.variations)?.id;
@@ -82,13 +83,6 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
   };
 
   useEffect(() => {
-    const list = listRef.current;
-    if (!list) return;
-    const activeEl = list.querySelector<HTMLElement>(`.${styles["is-active"]}`);
-    activeEl?.scrollIntoView({ block: "center", behavior: "smooth" });
-  }, [activePageId, activeVariationId]);
-
-  useEffect(() => {
     if (!isSandbox && activePage) {
       const fullPath = activeVariationId ? `${activePageId}/${activeVariationId}` : activePageId;
       lastExerciseId.current = fullPath;
@@ -103,157 +97,44 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
     ? `${activePage?.label} · ${activeVariation.label}`
     : activePage?.label ?? "";
 
+  const navValue: NavContextValue = {
+    isSandbox,
+    navigate,
+    lastExerciseId,
+    pages,
+    activePageId,
+    activeVariationId,
+    firstVariationId,
+    firstDoneId,
+    getIsPageCompleted,
+    getIsVariationCompleted,
+  };
+
   return (
     <main className={`${styles["app-shell"]}${isEmbedded ? ` ${styles["is-embedded"]}` : ""}`}>
-      <PanelGroup orientation="horizontal" className={styles["app-panels"]}>
-        <Panel defaultSize={28} minSize={15} className={`${styles["app-panel"]} ${styles["app-panel-left"]}`}>
-          <header className={styles["panel-header"]}>
-            <div className={styles["mode-toggle"]}>
-              <button
-                id="tour-exercises-btn"
-                className={[styles["mode-btn"], !isSandbox ? styles["mode-btn-active"] : ""].join(" ")}
-                onClick={() => navigate(lastExerciseId.current)}
-              >
-                Exercises
-              </button>
-              <button
-                id="tour-sandbox-btn"
-                className={[styles["mode-btn"], isSandbox ? styles["mode-btn-active"] : ""].join(" ")}
-                onClick={() => navigate("/sandbox")}
-              >
-                Sandbox
-              </button>
+      <NavProvider value={navValue}>
+        <PanelGroup orientation="horizontal" className={styles["app-panels"]}>
+          <CollapsibleSidePanel
+            position="left"
+            title="Exercises"
+            ContentComponent={NavContent}
+            defaultSize="25%"
+            minSize="25%"
+          />
+
+          <PanelResizeHandle className={styles["resize-handle"]} />
+
+          <Panel minSize="30%" className={`${styles["app-panel"]} ${styles["app-panel-right"]}`}>
+            <header className={styles["panel-header"]}>
+              <h2>{panelTitle}</h2>
+            </header>
+
+            <div className={styles["page-preview"]}>
+              <Outlet />
             </div>
-          </header>
-
-          <div ref={listRef} id="tour-nav-list" className={styles["page-list"]} role="list">
-            {pages.map((page) => {
-              const pageCompleted = getIsPageCompleted(page);
-
-              if (page.variations) {
-                const isGroupActive = page.id === activePageId && !isSandbox;
-                return (
-                  <div
-                    key={page.id}
-                    id={
-                      page.id === firstVariationId
-                        ? "tour-first-variation-group"
-                        : page.id === firstDoneId
-                        ? "tour-first-done"
-                        : undefined
-                    }
-                    role="listitem"
-                    className={[
-                      styles["page-item"],
-                      isGroupActive ? styles["is-active"] : "",
-                      page.solution ? styles["is-done"] : styles["is-pending"],
-                    ].join(" ")}
-                    onClick={() => navigate(`/${page.id}/${page.variations![0].id}`)}
-                  >
-                    <span className={styles["page-item-number"]}>{String(page.number).padStart(2, "0")}</span>
-                    <div className={styles["page-item-cols"]}>
-                      <div className={styles["page-item-col-main"]}>
-                        <div className={styles["page-item-top"]}>
-                          <span className={styles["page-item-label"]}>{page.label}</span>
-                          {pageCompleted && (
-                            <span className={styles["page-item-check"]} aria-hidden="true">
-                              ✓
-                            </span>
-                          )}
-                        </div>
-                        <div className={styles["page-item-variations"]}>
-                          {page.variations.map((variation) => {
-                            const varCompleted = getIsVariationCompleted(page.id, variation.id);
-                            return (
-                              <NavLink
-                                key={variation.id}
-                                to={`/${page.id}/${variation.id}`}
-                                onClick={(e) => e.stopPropagation()}
-                                className={({ isActive }) =>
-                                  [
-                                    styles["variation-link"],
-                                    isActive && !isSandbox ? styles["variation-link-active"] : "",
-                                    variation.solution ? "" : styles["variation-pending"],
-                                  ].join(" ")
-                                }
-                              >
-                                <span className={styles["variation-dot"]} aria-hidden="true" />
-                                <span>{variation.label}</span>
-                                {varCompleted && (
-                                  <span className={styles["page-item-check"]} aria-hidden="true">
-                                    ✓
-                                  </span>
-                                )}
-                              </NavLink>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      {page.tags.length > 0 && (
-                        <div className={styles["page-item-col-tags"]} aria-label="Topics">
-                          {page.tags.map((tag) => (
-                            <span key={tag} className={styles["page-item-tag"]}>
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              }
-
-              return (
-                <NavLink
-                  key={page.id}
-                  id={page.id === firstDoneId ? "tour-first-done" : undefined}
-                  className={({ isActive }) =>
-                    [
-                      styles["page-item"],
-                      isActive && !isSandbox ? styles["is-active"] : "",
-                      page.solution ? styles["is-done"] : styles["is-pending"],
-                    ].join(" ")
-                  }
-                  to={`/${page.id}`}
-                >
-                  <span className={styles["page-item-number"]}>{String(page.number).padStart(2, "0")}</span>
-                  <div className={styles["page-item-body"]}>
-                    <div className={styles["page-item-top"]}>
-                      <span className={styles["page-item-label"]}>{page.label}</span>
-                      {pageCompleted && (
-                        <span className={styles["page-item-check"]} aria-hidden="true">
-                          ✓
-                        </span>
-                      )}
-                    </div>
-                    {page.tags.length > 0 && (
-                      <div className={styles["page-item-tags"]} aria-label="Topics">
-                        {page.tags.map((tag) => (
-                          <span key={tag} className={styles["page-item-tag"]}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </NavLink>
-              );
-            })}
-          </div>
-        </Panel>
-
-        <PanelResizeHandle className={styles["resize-handle"]} />
-
-        <Panel defaultSize={72} minSize={30} className={`${styles["app-panel"]} ${styles["app-panel-right"]}`}>
-          <header className={styles["panel-header"]}>
-            <h2>{panelTitle}</h2>
-          </header>
-
-          <div className={styles["page-preview"]}>
-            <Outlet />
-          </div>
-        </Panel>
-      </PanelGroup>
+          </Panel>
+        </PanelGroup>
+      </NavProvider>
 
       <MeflyNavReceiver
         trustedOrigins={["https://mefly.dev", "https://www.mefly.dev"]}
