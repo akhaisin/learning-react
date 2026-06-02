@@ -11,6 +11,7 @@ import { useDebounce } from "../hooks/useDebounce";
 import * as vitestAdapter from "../test/vitest-adapter";
 import { compileAndRun, type CompilationResult } from "../utils/compiler";
 import { runTestSuite, type TestSuiteResult } from "../utils/testRunner";
+import { useTestPanel, countSuiteTests } from "./testPanelContext";
 import styles from "./ExerciseViewer.module.css";
 
 type Props = {
@@ -43,68 +44,6 @@ function sortFiles(files: [string, string][]): [string, string][] {
     }
     return a.localeCompare(b);
   });
-}
-
-function countSuiteTests(suite: TestSuiteResult): { total: number; passed: number } {
-  let total = suite.cases.length;
-  let passed = suite.cases.filter((c) => c.passed).length;
-  for (const child of suite.children) {
-    const c = countSuiteTests(child);
-    total += c.total;
-    passed += c.passed;
-  }
-  return { total, passed };
-}
-
-function SuiteBlock({ suite }: { suite: TestSuiteResult }) {
-  const { total, passed } = countSuiteTests(suite);
-  const allPassed = total > 0 && passed === total;
-  const hasFailed = total > 0 && passed < total;
-
-  return (
-    <div className={styles.testSuite}>
-      <div className={styles.suiteTitle}>
-        <span className={styles.suiteName}>{suite.name}</span>
-        {total > 0 && (
-          <span
-            className={[
-              styles.suiteCount,
-              allPassed ? styles.suiteCountPass : hasFailed ? styles.suiteCountFail : "",
-            ].join(" ")}
-          >
-            {passed}/{total}
-          </span>
-        )}
-      </div>
-      {suite.cases.length > 0 && (
-        <ul className={styles.caseList}>
-          {suite.cases.map((tCase, cIdx) => (
-            <li key={cIdx} className={styles.testCase}>
-              <span
-                className={[
-                  styles.caseIcon,
-                  tCase.passed ? styles.iconPass : styles.iconFail,
-                ].join(" ")}
-              >
-                {tCase.passed ? "✔" : "✘"}
-              </span>
-              <div className={styles.caseDetails}>
-                <span className={styles.caseName}>{tCase.name}</span>
-                {tCase.error && <pre className={styles.caseError}>{tCase.error}</pre>}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      {suite.children.length > 0 && (
-        <div className={styles.childSuites}>
-          {suite.children.map((child, idx) => (
-            <SuiteBlock key={idx} suite={child} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }
 
 class ErrorBoundary extends React.Component<
@@ -153,11 +92,15 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
   const [editedFiles, setEditedFiles] = useState<Record<string, string>>({});
   const [compiledResult, setCompiledResult] = useState<CompilationResult | null>(null);
 
-  // Test states
-  const [testResults, setTestResults] = useState<TestSuiteResult[]>([]);
-  const [isRunningTests, setIsRunningTests] = useState(false);
-  const [showTestDrawer, setShowTestDrawer] = useState(false);
-
+  // Test state lives in AppLayout's shared bottom panel (also used by Sandbox)
+  const {
+    testResults,
+    setTestResults,
+    isRunningTests,
+    setIsRunningTests,
+    setHasTests,
+    expandTestPanel,
+  } = useTestPanel();
 
   // Load custom boilerplate or original contents
   const loadCodeState = () => {
@@ -239,25 +182,32 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
       k !== "vitest.test.tsx"
   );
 
-  // Main test execution function
-  const executeTests = (comp: ComponentType, modules: Record<string, any>) => {
+  // Tell AppLayout whether to mount the bottom Test Results panel for this view
+  useEffect(() => {
+    setHasTests(hasTests);
+    return () => setHasTests(false);
+  }, [hasTests, setHasTests]);
+
+  // Build the suite tree for every test file, either executing the tests
+  // ("run") or just enumerating them ("collect" — fast, no rendering).
+  const buildTestResults = (
+    comp: ComponentType,
+    modules: Record<string, any>,
+    mode: "run" | "collect"
+  ): TestSuiteResult[] => {
     const testKeys = Object.keys(sourceFiles).filter(
       (k) =>
         (k.endsWith(".test.ts") || k.endsWith(".test.tsx")) &&
         k !== "vitest.test.ts" &&
         k !== "vitest.test.tsx"
     );
-    if (testKeys.length === 0) {
-      setTestResults([]);
-      return;
-    }
+    if (testKeys.length === 0) return [];
 
-    setIsRunningTests(true);
     const allResults: TestSuiteResult[] = [];
-    try {
-      const tempContainer = document.createElement("div");
-      document.body.appendChild(tempContainer);
+    const tempContainer = document.createElement("div");
+    document.body.appendChild(tempContainer);
 
+    try {
       for (const testKey of testKeys) {
         try {
           const testCode = editedFiles[testKey] || sourceFiles[testKey] || "";
@@ -300,7 +250,7 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
 
             const runFn = new Function("exports", "require", "module", "React", transpiled);
             runFn(testModule.exports, localRequire, testModule, React);
-          }, comp, tempContainer);
+          }, comp, tempContainer, mode);
           // Distinguish test suites by prefixing them with the test file name
           allResults.push(...results.map(suite => ({
             ...suite,
@@ -320,8 +270,33 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
           });
         }
       }
-
+    } finally {
       document.body.removeChild(tempContainer);
+    }
+
+    return allResults;
+  };
+
+  // Enumerate tests (without running) so the panel always shows the list
+  const collectTests = (comp: ComponentType, modules: Record<string, any>) => {
+    try {
+      setTestResults(buildTestResults(comp, modules, "collect"));
+    } catch (err: any) {
+      setTestResults([
+        {
+          name: "Test Enumeration Error",
+          cases: [{ name: "Collecting tests", passed: false, error: err.message || String(err) }],
+          children: [],
+        },
+      ]);
+    }
+  };
+
+  // Run tests for real and record completion status
+  const executeTests = (comp: ComponentType, modules: Record<string, any>) => {
+    setIsRunningTests(true);
+    try {
+      const allResults = buildTestResults(comp, modules, "run");
       setTestResults(allResults);
 
       const { total: totalTests, passed: passedAll } = allResults.reduce(
@@ -335,11 +310,10 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
 
       if (allPassed) {
         localStorage.setItem(`learning-react.v1.completion.${exerciseId}`, "true");
-        window.dispatchEvent(new CustomEvent("learning-react:completion-changed"));
       } else {
         localStorage.removeItem(`learning-react.v1.completion.${exerciseId}`);
-        window.dispatchEvent(new CustomEvent("learning-react:completion-changed"));
       }
+      window.dispatchEvent(new CustomEvent("learning-react:completion-changed"));
     } catch (err: any) {
       setTestResults([
         {
@@ -359,15 +333,21 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
     }
   };
 
-  // Clear test results on compiler error
+  // Keep the panel list in sync with the compiled result: enumerate the tests
+  // on each successful compile, or clear them on a compiler error.
   useEffect(() => {
-    if (compiledResult && compiledResult.error) {
+    if (!hasTests) return;
+    if (compiledResult?.error) {
       setTestResults([]);
-      // If compile errors, completion might be broken
       localStorage.removeItem(`learning-react.v1.completion.${exerciseId}`);
       window.dispatchEvent(new CustomEvent("learning-react:completion-changed"));
+      return;
     }
-  }, [compiledResult, exerciseId]);
+    if (compiledResult?.component) {
+      collectTests(compiledResult.component, compiledResult.modules);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [compiledResult, exerciseId, hasTests]);
 
   // Reset to original solution code
   const handleReset = () => {
@@ -464,7 +444,7 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
                   if (compiledResult?.component) {
                     executeTests(compiledResult.component, compiledResult.modules);
                   }
-                  setShowTestDrawer((prev) => !prev);
+                  expandTestPanel();
                 }}
                 disabled={isRunningTests}
               >
@@ -486,32 +466,6 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
             />
           ) : (
             <div className={styles.emptyState}>No source files available.</div>
-          )}
-
-          {/* Test results drawer */}
-          {showTestDrawer && (
-            <div className={styles.testDrawer}>
-              <div className={styles.testDrawerHeader}>
-                <h3>Test Results</h3>
-                <div className={styles.drawerControls}>
-                  <button
-                    className={styles.drawerCloseBtn}
-                    onClick={() => setShowTestDrawer(false)}
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-              <div className={styles.testDrawerBody}>
-                {testResults.length === 0 ? (
-                  <div className={styles.noTestsText}>No tests executed yet.</div>
-                ) : (
-                  testResults.map((suite, sIdx) => (
-                    <SuiteBlock key={sIdx} suite={suite} />
-                  ))
-                )}
-              </div>
-            </div>
           )}
         </div>
       </Panel>

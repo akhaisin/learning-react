@@ -12,7 +12,11 @@ export interface TestCaseResult {
   name: string;
   passed: boolean;
   error?: string;
+  /** True when the case was enumerated (collect mode) but not executed yet. */
+  pending?: boolean;
 }
+
+export type TestRunMode = "run" | "collect";
 
 export interface TestSuiteResult {
   name: string;
@@ -199,7 +203,8 @@ const suites: TestSuiteResult[] = [];
 export function runTestSuite(
   registerTests: () => void,
   component: React.ComponentType,
-  container: HTMLElement
+  container: HTMLElement,
+  mode: TestRunMode = "run"
 ): TestSuiteResult[] {
   suites.length = 0;
   activeSuite = null;
@@ -249,6 +254,12 @@ export function runTestSuite(
       suites.push(activeSuite);
     }
     const suite = activeSuite;
+
+    // Collect mode: enumerate the test without executing its body.
+    if (mode === "collect") {
+      suite.cases.push({ name, passed: false, pending: true });
+      return;
+    }
 
     // Clean up hook roots from the previous test before starting a new one.
     for (const root of hookRoots) {

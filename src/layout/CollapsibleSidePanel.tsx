@@ -4,6 +4,14 @@ import styles from "./CollapsibleSidePanel.module.css";
 
 export type PanelPosition = "left" | "right" | "bottom";
 
+/**
+ * Where the title + toggle sit within the bar. For a horizontal title bar
+ * (bottom panel, or any expanded panel) "left"/"right" align horizontally;
+ * for the collapsed vertical rail (left/right panels) "top"/"bottom" align
+ * vertically. Defaults to leading edge ("left"/"top").
+ */
+export type TitlePosition = "left" | "right" | "top" | "bottom";
+
 export interface Props {
   position: PanelPosition;
   title?: string;
@@ -11,6 +19,13 @@ export interface Props {
   defaultSize?: string;
   minSize?: string;
   defaultCollapsed?: boolean;
+  titlePosition?: TitlePosition;
+  /**
+   * Optional external imperative ref (from `usePanelRef`). When provided the
+   * parent can drive collapse/expand programmatically; otherwise the panel
+   * manages its own ref internally.
+   */
+  panelRef?: ReturnType<typeof usePanelRef>;
 }
 
 const COLLAPSED_SIZE = 32;
@@ -25,12 +40,43 @@ export default function CollapsibleSidePanel({
   defaultSize = "20%",
   minSize = "10%",
   defaultCollapsed = false,
+  titlePosition,
+  panelRef: externalPanelRef,
 }: Props) {
-  const panelRef = usePanelRef();
+  const internalPanelRef = usePanelRef();
+  const panelRef = externalPanelRef ?? internalPanelRef;
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
+  // Trailing-edge alignment for the title/toggle within the bar.
+  const titleBarAlignEnd = titlePosition === "right" ? styles["titleBar--alignEnd"] : "";
+  const collapsedBarAlignEnd = titlePosition === "bottom" ? styles["collapsedBar--alignEnd"] : "";
+
   useEffect(() => {
-    if (defaultCollapsed) panelRef.current?.collapse();
+    if (!defaultCollapsed) return;
+    // Collapse once the panel is registered with its group. On a fresh mount
+    // this succeeds immediately; when the panel remounts (e.g. navigating away
+    // and back) the group may not have re-registered its constraints yet, so
+    // `collapse()` throws "constraints not found" — retry on the next frames
+    // instead of crashing.
+    let raf = 0;
+    let attempts = 0;
+    const tryCollapse = () => {
+      raf = 0;
+      const panel = panelRef.current;
+      if (panel) {
+        try {
+          panel.collapse();
+          return;
+        } catch {
+          /* constraints not ready yet — fall through to retry */
+        }
+      }
+      if (attempts++ < 10) raf = requestAnimationFrame(tryCollapse);
+    };
+    tryCollapse();
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function toggle() {
@@ -59,7 +105,7 @@ export default function CollapsibleSidePanel({
     >
       {isVertical && collapsed ? (
         /* ── Collapsed vertical bar ── */
-        <div className={styles.collapsedBar} onClick={toggle} title="Expand">
+        <div className={`${styles.collapsedBar} ${collapsedBarAlignEnd}`} onClick={toggle} title="Expand">
           <button className={styles.toggleBtn} tabIndex={-1} aria-hidden>
             {arrow}
           </button>
@@ -69,7 +115,7 @@ export default function CollapsibleSidePanel({
         /* ── Expanded (all positions) or collapsed bottom ── */
         <>
           <div
-            className={`${styles.titleBar} ${styles[`titleBar--${position}`]}`}
+            className={`${styles.titleBar} ${styles[`titleBar--${position}`]} ${titleBarAlignEnd}`}
             onClick={toggle}
             title={collapsed ? "Expand" : "Collapse"}
           >

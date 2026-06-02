@@ -4,9 +4,12 @@ import { useHostSync, MeflyNavReceiver } from "mefly-nav";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { startTour } from "./tour";
 import "mefly-nav/style.css";
-import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
+import { Group as PanelGroup, Panel, Separator as PanelResizeHandle, usePanelRef } from "react-resizable-panels";
 import CollapsibleSidePanel from "./CollapsibleSidePanel";
 import NavContent, { NavProvider, type NavContextValue } from "./NavContent";
+import TestResultsContent from "./TestResultsPanel";
+import { TestPanelContext, type TestPanelContextValue } from "./testPanelContext";
+import type { TestSuiteResult } from "../utils/testRunner";
 import styles from "./AppLayout.module.css";
 
 export type AppVariation = {
@@ -51,6 +54,12 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
   );
   const [helpSeen, setHelpSeen] = useLocalStorage("learning-react.v1.helpSeen", false);
   const [theme, setTheme] = useLocalStorage<"light" | "dark">("learning-react.v1.theme", "light");
+
+  // Test results panel (bottom) — shared by ExerciseViewer (and later Sandbox)
+  const [testResults, setTestResults] = useState<TestSuiteResult[]>([]);
+  const [isRunningTests, setIsRunningTests] = useState(false);
+  const [hasTests, setHasTests] = useState(false);
+  const testPanelRef = usePanelRef();
   const firstVariationId = pages.find((p) => p.variations)?.id;
   const firstDoneId = pages.find((p) => p.solution)?.id;
 
@@ -110,30 +119,62 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
     getIsVariationCompleted,
   };
 
+  const testPanelValue: TestPanelContextValue = {
+    testResults,
+    setTestResults,
+    isRunningTests,
+    setIsRunningTests,
+    hasTests,
+    setHasTests,
+    expandTestPanel: () => testPanelRef.current?.expand(),
+  };
+
   return (
     <main className={`${styles["app-shell"]}${isEmbedded ? ` ${styles["is-embedded"]}` : ""}`}>
       <NavProvider value={navValue}>
-        <PanelGroup orientation="horizontal" className={styles["app-panels"]}>
-          <CollapsibleSidePanel
-            position="left"
-            title="Exercises"
-            ContentComponent={NavContent}
-            defaultSize="25%"
-            minSize="25%"
-          />
+        <TestPanelContext.Provider value={testPanelValue}>
+          <PanelGroup orientation="horizontal" className={styles["app-panels"]}>
+            <CollapsibleSidePanel
+              position="left"
+              title="Exercises"
+              ContentComponent={NavContent}
+              defaultSize="25%"
+              minSize="25%"
+            />
 
-          <PanelResizeHandle className={styles["resize-handle"]} />
+            <PanelResizeHandle className={styles["resize-handle"]} />
 
-          <Panel minSize="30%" className={`${styles["app-panel"]} ${styles["app-panel-right"]}`}>
-            <header className={styles["panel-header"]}>
-              <h2>{panelTitle}</h2>
-            </header>
+            <Panel minSize="30%" className={styles["app-panel-right-outer"]}>
+              <PanelGroup orientation="vertical" className={styles["app-right-group"]}>
+                <Panel minSize="30%" className={`${styles["app-panel"]} ${styles["right-content"]}`}>
+                  <header className={styles["panel-header"]}>
+                    <h2>{panelTitle}</h2>
+                  </header>
 
-            <div className={styles["page-preview"]}>
-              <Outlet />
-            </div>
-          </Panel>
-        </PanelGroup>
+                  <div className={styles["page-preview"]}>
+                    <Outlet />
+                  </div>
+                </Panel>
+
+                {hasTests && (
+                  <>
+                    <PanelResizeHandle className={styles["resize-handle-h"]} />
+                    <CollapsibleSidePanel
+                      position="bottom"
+                      title="Test Results"
+                      titlePosition="right"
+                      ContentComponent={TestResultsContent}
+                      panelRef={testPanelRef}
+                      defaultSize="35%"
+                      minSize="15%"
+                      defaultCollapsed
+                    />
+                  </>
+                )}
+              </PanelGroup>
+            </Panel>
+          </PanelGroup>
+        </TestPanelContext.Provider>
       </NavProvider>
 
       <MeflyNavReceiver

@@ -7,7 +7,8 @@
 
 .panel--left   { border-right: 1px solid var(--color-border-soft); }
 .panel--right  { border-left:  1px solid var(--color-border-soft); }
-.panel--bottom { border-top:   1px solid var(--color-border-soft); }
+/* No border-top: the resize separator above already draws the divider, and a
+ * 1px border would make the 32px title bar overflow the collapsed rail. */
 
 /* ── Title bar (expanded, or collapsed bottom) ───────────── */
 .titleBar {
@@ -25,6 +26,14 @@
 .titleBar:hover { background: var(--color-bg-active); }
 .titleBar:hover .toggleBtn { color: var(--color-text); }
 
+/* Push the title + toggle to the trailing edge (titlePosition="right"), with
+ * the toggle button on the far right (row-reverse packs to the right edge). */
+.titleBar--alignEnd {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  padding-right: 4px;
+}
+
 .titleBar--left,
 .titleBar--right  { border-bottom: 1px solid var(--color-border-soft); }
 .titleBar--bottom { border-bottom: 1px solid var(--color-border-soft); }
@@ -40,6 +49,9 @@
   cursor: pointer;
   overflow: hidden;
 }
+
+/* Push the toggle + vertical title to the bottom (titlePosition="bottom") */
+.collapsedBar--alignEnd { justify-content: flex-end; }
 
 /* ── Text labels ─────────────────────────────────────────── */
 .titleText {

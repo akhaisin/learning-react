@@ -32,6 +32,28 @@
   height: 100%;
 }
 
+/* Outer right panel: hosts the vertical group (content + bottom test panel) */
+.app-panel-right-outer {
+  min-width: 0;
+  min-height: 0;
+}
+
+.app-right-group {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Inner content panel inside the vertical group — like .app-panel but without
+ * height:100% (the vertical group sizes it via flex). */
+.right-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  padding: 2rem;
+}
+
 .resize-handle {
   width: 5px;
   flex-shrink: 0;
@@ -39,6 +61,33 @@
   cursor: col-resize;
   position: relative;
   transition: background-color 0.15s ease;
+}
+
+/* Horizontal separator for the vertical (content / bottom) group */
+.resize-handle-h {
+  height: 5px;
+  flex-shrink: 0;
+  background: transparent;
+  cursor: row-resize;
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+.resize-handle-h::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  top: 2px;
+  height: 1px;
+  background: var(--color-border);
+  transition: background-color 0.15s ease, top 0.15s ease, height 0.15s ease;
+}
+
+.resize-handle-h:hover::after,
+.resize-handle-h[data-separator-state="drag"]::after {
+  top: 1px;
+  height: 3px;
+  background: var(--color-accent);
 }
 
 .resize-handle::after {
