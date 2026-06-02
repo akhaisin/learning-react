@@ -6,11 +6,10 @@ import { javascript } from "@codemirror/lang-javascript";
 import { css } from "@codemirror/lang-css";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
-import { transform } from "sucrase";
 import { useDebounce } from "../hooks/useDebounce";
-import * as vitestAdapter from "../test/vitest-adapter";
 import { compileAndRun, type CompilationResult } from "../utils/compiler";
-import { runTestSuite, type TestSuiteResult } from "../utils/testRunner";
+import type { TestSuiteResult } from "../utils/testRunner";
+import { runFileTests } from "../utils/runFileTests";
 import { useTestPanel, countSuiteTests } from "./testPanelContext";
 import styles from "./ExerciseViewer.module.css";
 
@@ -195,86 +194,7 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
     modules: Record<string, any>,
     mode: "run" | "collect"
   ): TestSuiteResult[] => {
-    const testKeys = Object.keys(sourceFiles).filter(
-      (k) =>
-        (k.endsWith(".test.ts") || k.endsWith(".test.tsx")) &&
-        k !== "vitest.test.ts" &&
-        k !== "vitest.test.tsx"
-    );
-    if (testKeys.length === 0) return [];
-
-    const allResults: TestSuiteResult[] = [];
-    const tempContainer = document.createElement("div");
-    document.body.appendChild(tempContainer);
-
-    try {
-      for (const testKey of testKeys) {
-        try {
-          const testCode = editedFiles[testKey] || sourceFiles[testKey] || "";
-          if (!testCode.trim()) {
-            // An empty test file shouldn't add passing tests, but we should report that it's empty
-            allResults.push({
-              name: `${testKey}`,
-              cases: [],
-              children: [],
-            });
-            continue;
-          }
-
-          let transpiled = transform(testCode, {
-            transforms: ["typescript", "jsx", "imports"],
-            production: true,
-          }).code;
-          // Strip native Vitest block to avoid top-level await and import.meta syntax errors in browser sandboxes
-          transpiled = transpiled.replace(/if\s*\(\s*typeof\s+import\.meta\.env\s*!==\s*"undefined"\s*&&\s*import\.meta\.env\.VITEST\s*\)[\s\S]*$/, "");
-
-          const results = runTestSuite(() => {
-            const testModule = { exports: {} as any };
-            const localRequire = (reqPath: string) => {
-              const normalized = reqPath.replace(/^((\.\.\/)|(\.\/))+/, "");
-
-              if (/test\/vitest-adapter(?:\.[a-z]+)?$/i.test(normalized)) {
-                return vitestAdapter;
-              }
-
-              const matchedKey = Object.keys(modules).find(
-                (k) => k.replace(/\.[a-zA-Z0-9]+$/, "").toLowerCase() === normalized.toLowerCase()
-              );
-              if (matchedKey) {
-                return modules[matchedKey];
-              }
-
-              if (reqPath === "react") return React;
-              throw new Error(`Cannot require "${reqPath}" inside test suite`);
-            };
-
-            const runFn = new Function("exports", "require", "module", "React", transpiled);
-            runFn(testModule.exports, localRequire, testModule, React);
-          }, comp, tempContainer, mode);
-          // Distinguish test suites by prefixing them with the test file name
-          allResults.push(...results.map(suite => ({
-            ...suite,
-            name: `${testKey} > ${suite.name}`
-          })));
-        } catch (err: any) {
-          allResults.push({
-            name: `${testKey} > Test Evaluation Error`,
-            cases: [
-              {
-                name: "Loading suite",
-                passed: false,
-                error: err.message || String(err),
-              },
-            ],
-            children: [],
-          });
-        }
-      }
-    } finally {
-      document.body.removeChild(tempContainer);
-    }
-
-    return allResults;
+    return runFileTests({ ...sourceFiles, ...editedFiles }, comp, modules, mode);
   };
 
   // Enumerate tests (without running) so the panel always shows the list

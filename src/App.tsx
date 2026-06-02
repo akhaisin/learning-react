@@ -2,7 +2,7 @@ import type { ComponentType } from "react";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppLayout, { type AppPage, type AppVariation } from "./layout/AppLayout";
 import ExerciseViewer from "./layout/ExerciseViewer";
-import SandboxEditor from "./layout/SandboxEditor";
+import SandboxEditor from "./components/sandbox/SandboxEditor";
 import { exercises } from "./exercises";
 
 type PageModule = {

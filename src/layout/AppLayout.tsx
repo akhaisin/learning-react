@@ -138,8 +138,8 @@ function AppLayout({ pages, onSelectedPageChange }: AppLayoutProps) {
               position="left"
               title="Exercises"
               ContentComponent={NavContent}
-              defaultSize="25%"
-              minSize="25%"
+              defaultSize="20%"
+              minSize="20%"
             />
 
             <PanelResizeHandle className={styles["resize-handle"]} />

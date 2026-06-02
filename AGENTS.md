@@ -142,3 +142,44 @@ Claude Code contains a custom workspace-level skill for automated scaffolding. I
    ```
    *Example*: `/new-exercise add-variation todoList useContext "useContext"`
    *(If the target exercise was flat, the skill will automatically ask you to name the existing implementation, migrate the files into a subdirectory, and convert the `exercises.ts` registration to variations format).*
+
+---
+
+## 5. TODO / Future Work
+
+### LiveEditor generalisation (ExerciseViewer ↔ SandboxEditor)
+
+`ExerciseViewer` ([src/layout/ExerciseViewer.tsx](./src/layout/ExerciseViewer.tsx)) and `SandboxEditor`
+([src/components/sandbox/SandboxEditor.tsx](./src/components/sandbox/SandboxEditor.tsx)) share a lot of structure.
+**Decision: left as-is for now** — capture the plan here and revisit when the duplication starts to hurt.
+
+**Already shared:**
+- [src/utils/runFileTests.ts](./src/utils/runFileTests.ts) — transpile + run/collect pipeline.
+- [src/layout/testPanelContext.ts](./src/layout/testPanelContext.ts) — `useTestPanel`, `countSuiteTests`, and the bottom Test Results panel (owned by `AppLayout`).
+
+**Still duplicated (the highest-value extraction):** the test-wiring block in both components —
+`useTestPanel` destructure, the `hasTests` mount effect, the debounced **collect** effect, the **run** handler,
+the badge math (`countSuiteTests` → `total/passed`), the Reset + Run Tests buttons, and `expandTestPanel()` on run.
+
+**What genuinely differs (don't force into one component):**
+
+| Concern | ExerciseViewer | SandboxEditor |
+|---|---|---|
+| Compiler | `compileAndRun` (full module graph, `Page.tsx` entry, `modules` map) | lenient `compile()` (strips imports, injects hooks, styles proxy) |
+| Files / tabs | dynamic from disk `sourceFiles`, sorted/filtered | 3 fixed tabs (`tsx`/`css`/`test`) |
+| Persistence | per-exercise keys + raw/base drift detection | global `sandbox-*` keys |
+| Reset / Clear | Reset→solution **and** Clear→boilerplate | Reset→template only |
+| Completion | writes `completion.*` + dispatches events | none |
+| Test modules | component importable in tests | render-based only (`modules = {}`) |
+
+**Recommended phased approach (when picked up):**
+1. **`useLiveTests` hook** (low risk, biggest win): encapsulate `hasTests` reporting, the debounced collect,
+   the run handler, badge derivation, and expand-on-run. Parameterise by `testFiles`, a `compileForRun()`
+   callback, and `modules`. Both components consume it; compilers/persistence stay separate.
+2. **Optional shared presentational pieces**: `EditorShell` (PanelGroup + editor/preview + ErrorBoundary frame),
+   `EditorTabs`, and a test action bar — kept configurable via props since tabs/Reset differ.
+3. **Avoid** a single all-in-one `<LiveEditor>` that also owns compiler + persistence + completion; the two
+   models are different enough that it becomes prop/flag soup (leaky abstraction).
+
+**Risk note:** the in-browser exercise/sandbox flow is **not** covered by `pnpm test` (those are Vitest's own
+runs). Any refactor here must be verified with `pnpm build` **and** a manual run of the app.
