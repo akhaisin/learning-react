@@ -8,6 +8,11 @@
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-bg-subtle);
+  box-shadow: 0 12px 28px var(--color-shadow);
 }
 
 .tabBar {
@@ -127,8 +132,15 @@
 }
 
 .previewPanel {
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   overflow: auto;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-bg-subtle);
+  box-shadow: 0 12px 28px var(--color-shadow);
 }
 
 .resizeHandle {
@@ -138,6 +150,7 @@
   cursor: col-resize;
   position: relative;
   transition: background-color 0.15s ease;
+  margin: 0 0.5rem;
 }
 
 .resizeHandle::after {
