@@ -12,6 +12,7 @@ import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'reac
 import ErrorBoundary from '../ErrorBoundary';
 import { useTestPanel, countSuiteTests } from '../../layout/testPanelContext';
 import { runFileTests } from '../../utils/runFileTests';
+import useTheme from '../../hooks/useTheme';
 import clearTsx from './Sandbox.clear.tsx?raw';
 import clearCss from './Sandbox.module.clear.css?raw';
 import clearTest from './Sandbox.test.clear.ts?raw';
@@ -98,6 +99,7 @@ function SandboxEditor() {
   const [activeTab, setActiveTab] = useState<Tab>('tsx');
   const [result, setResult] = useState<CompileResult>(() => compile(DEFAULT_TSX));
   const [renderKey, setRenderKey] = useState(0);
+  const theme = useTheme();
 
   const {
     testResults,
@@ -268,7 +270,7 @@ function SandboxEditor() {
             value={editorValue}
             onChange={onEditorChange}
             extensions={editorExtensions}
-            theme={oneDark}
+            theme={theme === 'dark' ? oneDark : 'light'}
             height="100%"
             style={{ height: '100%' }}
           />

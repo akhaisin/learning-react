@@ -11,6 +11,7 @@ import { compileAndRun, type CompilationResult } from "../utils/compiler";
 import type { TestSuiteResult } from "../utils/testRunner";
 import { runFileTests } from "../utils/runFileTests";
 import { useTestPanel, countSuiteTests } from "./testPanelContext";
+import useTheme from "../hooks/useTheme";
 import styles from "./ExerciseViewer.module.css";
 
 type Props = {
@@ -100,6 +101,8 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
     setHasTests,
     expandTestPanel,
   } = useTestPanel();
+
+  const theme = useTheme();
 
   // Load custom boilerplate or original contents
   const loadCodeState = () => {
@@ -379,7 +382,7 @@ function ExerciseViewer({ exerciseId, component: OriginalComponent, sourceFiles 
             <CodeMirror
               value={editedFiles[activeTab] ?? ""}
               extensions={getExtensions(activeTab)}
-              theme={oneDark}
+              theme={theme === "dark" ? oneDark : "light"}
               height="100%"
               style={{ height: "100%" }}
               onChange={handleCodeChange}

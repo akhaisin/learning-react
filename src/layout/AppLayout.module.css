@@ -389,7 +389,7 @@
 
 .help-btn {
   position: fixed;
-  left: 3.75rem;
+  left: 6.5rem;
   bottom: 1rem;
   width: 2.15rem;
   height: 2.15rem;
@@ -434,7 +434,7 @@
 
 .theme-btn {
   position: fixed;
-  left: 6.5rem;
+  left: 3.75rem;
   bottom: 1rem;
   width: 2.15rem;
   height: 2.15rem;
@@ -469,8 +469,8 @@
 }
 
 .is-embedded .repo-link { left: 3.75rem; }
-.is-embedded .help-btn  { left: 6.5rem; }
-.is-embedded .theme-btn { left: 9.25rem; }
+.is-embedded .theme-btn { left: 6.5rem; }
+.is-embedded .help-btn  { left: 9.25rem; }
 
 .modal-overlay {
   position: fixed;
@@ -607,17 +607,17 @@
     bottom: 0.75rem;
   }
 
-  .help-btn {
+  .theme-btn {
     left: 3.5rem;
     bottom: 0.75rem;
   }
 
-  .theme-btn {
+  .help-btn {
     left: 6.25rem;
     bottom: 0.75rem;
   }
 
   .is-embedded .repo-link { left: 3.5rem; }
-  .is-embedded .help-btn  { left: 6.25rem; }
-  .is-embedded .theme-btn { left: 9rem; }
+  .is-embedded .theme-btn { left: 6.25rem; }
+  .is-embedded .help-btn  { left: 9rem; }
 }
